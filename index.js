@@ -2,6 +2,10 @@ const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 const { parse } = require('pg-connection-string');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+
+
 
 dotenv.config();
 
