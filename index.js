@@ -12,7 +12,10 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const { request } = require('express');
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 dotenv.config();
 
