@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
-app.use(serviceProviderRouter)
+app.use('/serviceProvider', serviceProviderRouter)
 const port = process.env.PORT || 3000;
 
 // Connect to the database
