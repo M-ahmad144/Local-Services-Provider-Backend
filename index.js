@@ -21,12 +21,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
-<<<<<<< HEAD
 app.use('/serviceProvider', serviceProviderRouter)
-=======
-app.use(serviceProviderRouter);
-
->>>>>>> f336410d083c52938a5e814270d34545218991cd
 const port = process.env.PORT || 3000;
 
 // Connect to the database
