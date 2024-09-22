@@ -8,7 +8,7 @@ const dotenv = require('dotenv');
 const serviceProviderRouter = require('./Routes/ServiceProvider')
 
 const { parse } = require('pg-connection-string');
-const cookieParser = require('cookie-parser');
+
 const cors = require('cors');
 const { request } = require('express');
 
