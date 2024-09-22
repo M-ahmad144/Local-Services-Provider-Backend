@@ -9,7 +9,7 @@ const serviceProviderRouter = require('./Routes/ServiceProvider')
 
 const { parse } = require('pg-connection-string');
 
-const cors = require('cors');
+
 const { request } = require('express');
 
 
