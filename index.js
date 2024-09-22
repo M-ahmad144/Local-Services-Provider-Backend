@@ -2,25 +2,22 @@ const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 const { parse } = require('pg-connection-string');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-
-
+const cookieParser = require('cookie-parser'); // Import cookie-parser
+const cors = require('cors'); // Ensure cors is imported if needed
 
 dotenv.config();
 
-
+// Parse the DATABASE_URL and configure SSL
 const config = parse(process.env.DATABASE_URL);
-
 
 config.ssl = {
   rejectUnauthorized: false,
 };
 
-
+// Create a PostgreSQL connection pool
 const pool = new Pool(config);
 
-// Test the connection
+// Test the database connection
 pool.connect((err, client, release) => {
   if (err) {
     console.error('Error connecting to the database:', err.stack);
@@ -31,31 +28,29 @@ pool.connect((err, client, release) => {
 });
 
 const app = express();
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors());
 
+// Middlewares
+app.use(express.json()); // Parse JSON bodies
+app.use(cookieParser()); // Enable cookie parsing
+app.use(cors()); // Enable CORS if needed
 
 const port = process.env.PORT || 3000;
 
-app.use(express.json());
-
-
-// TEST CODE RUN THIS AND DONT REMOVE IT
+// Test endpoint to fetch data from the database
 app.get('/test', async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM playing_with_neon;');
     const users = result.rows;
     client.release();
-    res.json(users);
+    res.json(users); // Send the data as JSON
   } catch (err) {
     console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
