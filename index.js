@@ -6,8 +6,13 @@ const dotenv = require('dotenv');
 
 
 const serviceProviderRouter = require('./Routes/ServiceProvider')
+const signingoogle = require('./Routes/Signingoogle')
 
 const { parse } = require('pg-connection-string');
+
+// signin with google
+const {OAuth2Client} = require('google-auth-library');
+
 
 
 
@@ -22,7 +27,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 app.use('/serviceProvider', serviceProviderRouter)
-const port = process.env.PORT || 3000;
+app.use('/auth/google', signingoogle)
+const port = process.env.PORT || 8080;
 
 // Connect to the database
 async function config() {
