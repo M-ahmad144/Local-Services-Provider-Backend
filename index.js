@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const mongoose = require("mongoose"); // Import mongoose module that will be used to connect to MongoDB.
 
 
 const serviceProviderRouter = require('./Routes/ServiceProvider')
@@ -24,20 +25,17 @@ app.use(cors());
 app.use('/serviceProvider', serviceProviderRouter)
 const port = process.env.PORT || 3000;
 
-// Connect to the database
-async function config() {
-  try {
-    await prisma.$connect();
-    console.log('Connected to the database');
-    app.listen(port, () => {
-      console.log(`Server running on http://localhost:${port}`);
-    });
-  } catch (err) {
-    console.error('Error connecting to the database:', err);
-    process.exit(1); // Exit if connection fails
-  }
-}
+const monogURI = process.env.DATABASE_URL // Create a variable called mongoURI that will store the MongoDB connection string.
 
+const connectDB = async () => { // Create a new function called connectDB that will connect to database.
+  try {
+    const connect = await mongoose.connect(monogURI); // Connect to MongoDB using mongoose.connect() method.
+    console.log(`MongoDB Connected`); // If connection is successful, print the host name.
+  } catch (err) { // If connection is unsuccessful, print the error message and exit the process.
+    console.log(err); // Print the error message.
+    process.exit(1); // Exit the process.
+  }
+};
 app.get('/test', async (req, res) => {
   try {
     const users = await prisma.playingWithNeon.findMany(); 
@@ -48,4 +46,8 @@ app.get('/test', async (req, res) => {
   }
 });
 
-config();
+
+app.listen(port, () => {
+  connectDB()
+  console.log(`Server running on http://localhost:${port}`);
+});
