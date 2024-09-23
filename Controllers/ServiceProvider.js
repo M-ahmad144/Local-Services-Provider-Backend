@@ -4,9 +4,9 @@ const Service = require('../Models/Service')
 const getAllServices = async (req, res) => {
   try {
     const services = await Service.find()
-      .populate('user') // Fetch user details
-      .populate('orders') // Assuming you have an orders model to populate
-      .populate('reviews'); // Assuming you have a reviews model to populate
+      //.populate('user') // Fetch user details
+      //.populate('orders') // Assuming you have an orders model to populate
+      //.populate('reviews'); // Assuming you have a reviews model to populate
 
     res.status(200).json(services);
   } catch (error) {
@@ -64,7 +64,7 @@ const updateService = async (req, res) => {
         service_images: data.service_images,
       },
       { new: true } // Return the updated document
-    );
+    ).populate('user');
     res.status(200).json(updatedService);
   } catch (error) {
     console.error("Error updating service:", error);
@@ -94,10 +94,13 @@ const getServicesByUserID = async (req, res) => {
   const { user_id } = req.params;  // Extract user_id from the URL
 
   try {
-    const services = await Service.find({ user: user_id })
-      .populate('user')
-      .populate('orders')
-      .populate('reviews');
+    const userid = mongoose.Types.ObjectId.isValid(user_id) ? new mongoose.Types.ObjectId(user_id) : null;
+
+    if (!userid) {
+      return res.status(400).json({ error: 'Invalid user ID format' });
+    }
+    const services = await Service.find({ user: userid })
+      
       
     res.status(200).json(services);
   } catch (error) {
@@ -108,16 +111,17 @@ const getServicesByUserID = async (req, res) => {
 
   
 
-const getServiceByID = async (req, res) => {
+const getServiceByID = async (req, res, next) => {
   const { service_id } = req.params;  // Extract service_id from the URL
   try {
     const service = await Service.findById(service_id)
-      .populate('users')
-      .populate('orders')
-      .populate('reviews');
+      //.populate('users')
+      //.populate('orders')
+      //.populate('reviews');
 
     if (service) {
       req.service = service;
+      next()
       res.status(200).json(service); // Send the service as response
     } else {
       res.status(404).json({ error: "Service not found" });
@@ -127,6 +131,8 @@ const getServiceByID = async (req, res) => {
     res.status(500).json({ error: "Error fetching service" });
   }
 };
+
+
 
   
 module.exports = {
