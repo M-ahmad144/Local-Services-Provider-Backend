@@ -1,11 +1,10 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 const { OAuth2Client } = require('google-auth-library'); // Import the Google OAuth2 client
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const prisma = new PrismaClient();
+
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Initialize the client with the environment variable
 
