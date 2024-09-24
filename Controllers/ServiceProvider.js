@@ -18,7 +18,7 @@ const getAllServices = async (req, res) => {
 const createService = async (req, res) => {
   const data = req.body; // Assuming the data is sent in the request body
   try {
-    const userId = mongoose.Types.ObjectId.isValid(data.user) ? new mongoose.Types.ObjectId(data.user) : null;
+    const userId = mongoose.Types.ObjectId.isValid(data.user_id) ? new mongoose.Types.ObjectId(data.user) : null;
 
     if (!userId) {
       return res.status(400).json({ error: 'Invalid user ID format' });
@@ -44,6 +44,7 @@ const createService = async (req, res) => {
 
 const updateService = async (req, res) => {
   const serviceId = req.params.service_id;  // Extract service_id from the URL
+  console.log(serviceId)
   const data = req.body;
 
   try {
@@ -64,8 +65,13 @@ const updateService = async (req, res) => {
         service_images: data.service_images,
       },
       { new: true } // Return the updated document
-    ).populate('user');
-    res.status(200).json(updatedService);
+    )
+
+    if (!updatedService) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    return res.status(200).json(updatedService);
   } catch (error) {
     console.error("Error updating service:", error);
     res.status(500).json({ error: "An error occurred while updating the service." });
@@ -99,7 +105,7 @@ const getServicesByUserID = async (req, res) => {
     if (!userid) {
       return res.status(400).json({ error: 'Invalid user ID format' });
     }
-    const services = await Service.find({ user: userid })
+    const services = await Service.find({ user_id: userid })
       
       
     res.status(200).json(services);
