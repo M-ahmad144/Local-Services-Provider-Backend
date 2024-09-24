@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const serviceProviderRouter = require('./Routes/ServiceProvider')
 const signingoogle = require('./Routes/Signingoogle')
 const profileRouter = require('./Routes/Profile')
+const User=require('./Routes/User')
 
 // signin with google
 const {OAuth2Client} = require('google-auth-library');
@@ -21,6 +22,7 @@ app.use(cors());
 app.use('/serviceProvider', serviceProviderRouter)
 app.use('/profile', profileRouter)
 app.use('/auth/google', signingoogle)
+app.use('/api',User)
 const PORT = process.env.PORT || 8080;
 
 

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../Models/User");
 const sendEmail = require("../Utils/sendEmail");
 const dotenv = require('dotenv');
+const nodemailer = require('nodemailer');
 dotenv.config();
 
 let Transport = nodemailer.createTransport({
@@ -15,6 +16,63 @@ let Transport = nodemailer.createTransport({
     },
   });
 
+  //login and Sigun up function
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+  
+    // Check if user exists
+    console.log(email);
+
+    return res.status(200).json({ success: true, message: "User logged in successfully" });
+    });     
+
+// Sigun up function
+
+const signup = asyncHandler(async (req, res) => {
+
+
+    const { email,name, password } = req.body;
+    console.log(email);
+    console.log(name);
+    // Check if user exists
+    let user = await User.findOne({
+      email,
+    });
+
+    if (user) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    // encrypt password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+
+    user = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    await user.save();
+    // send OTP verification email
+
+    res.status(200).json({
+      success: true,
+      message: "User registered successfully",
+      Data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+    
+
+
+
+  });
+
+    // 
 
   // send otp verification email
 const sendOTP = async ({ _id, email }, res) => {
@@ -119,3 +177,10 @@ const sendOTP = async ({ _id, email }, res) => {
       return res.status(500).json({ message: "Server error" });
     }
   });
+
+
+  module.exports={
+
+    login,
+    signup
+  }

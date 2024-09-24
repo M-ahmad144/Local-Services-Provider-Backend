@@ -1,3 +1,4 @@
+const { verify } = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -7,6 +8,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true }, // Store hashed password
     user_type: { type: String, enum: ['service provider', 'buyer'], required: true },
     profile_description: { type: String },
+    verify: { type: Boolean, default: false },
     profile_image: { type: String },
     location: { type: String },
     rating: { type: Number, default: 0 },
