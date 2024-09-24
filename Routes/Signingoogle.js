@@ -1,11 +1,12 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 const { OAuth2Client } = require('google-auth-library'); // Import the Google OAuth2 client
 const dotenv = require('dotenv');
+const mongoose = require("mongoose"); // Import mongoose module that will be used to connect to MongoDB.
+const User = require('../Models/User'); // Import the User model
 
 dotenv.config();
 
-const prisma = new PrismaClient();
+
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Initialize the client with the environment variable
 
@@ -35,20 +36,18 @@ router.post('/', async (req, res) => {
   console.log('Processing user:', name);
 
   try {
-    let user = await prisma.user.findUnique({
-      where: { email },
-    });
+    // Check if the user exists in the database
+    let user = await User.findOne({ email });
 
     // If the user does not exist, create a new one
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email,
-          name,
-          password: 'google', // Consider using a hashed password for security
-          user_type: 'freelancer', // Set user type
-        },
+      user = new User({
+        email,
+        name,
+        password: 'google', // Consider using a hashed password for security
+        user_type: 'freelancer', // Set user type
       });
+      await user.save(); // Save the new user to the database
       console.log('User created:', user);
     } else {
       console.log('User already exists:', user);

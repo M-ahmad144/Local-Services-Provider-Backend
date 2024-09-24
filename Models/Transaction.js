@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema(
   {
-    order: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
-    buyer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    order_id: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
+    buyer_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     amount: { type: Number, required: true },
     payment_method: { type: String, required: true },
     payment_status: {
