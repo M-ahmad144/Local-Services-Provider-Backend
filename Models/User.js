@@ -13,11 +13,15 @@ const userSchema = new mongoose.Schema(
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
     services: [{ type: mongoose.Schema.Types.ObjectId, ref: "Service" }],
-    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order", default: [] }],
+    orders: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Order", default: [] },
+    ],
     freelancerOrders: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Order", default: [] },
     ],
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review", default: [] }],
+    reviews: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Review", default: [] },
+    ],
     transactions: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Transaction", default: [] },
     ],
@@ -32,4 +36,4 @@ const userSchema = new mongoose.Schema(
 );
 
 const User = mongoose.model("User", userSchema);
-module.exports = User
+module.exports = User;
