@@ -13,7 +13,10 @@ const userSchema = new mongoose.Schema(
     },
     profile_description: { type: String },
     verify: { type: Boolean, default: false },
-    profile_image: { type: String },
+    profile_image: {
+      type: String,
+      default: "default-profile.png",
+    },
     location: { type: String },
     rating: { type: Number, default: 0 },
     created_at: { type: Date, default: Date.now },

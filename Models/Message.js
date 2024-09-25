@@ -2,23 +2,13 @@ const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema(
   {
-<<<<<<< HEAD
     chat: { type: mongoose.Schema.Types.ObjectId, ref: "Chat", required: true },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    receiver: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-=======
-    order_id: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
-    sender_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    receiver_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
->>>>>>> 57a852cb84dec6344710c44d2e452f61fac841ce
+
     message_text: { type: String, required: true },
     sent_at: { type: Date, default: Date.now },
     read_at: { type: Date },
@@ -27,10 +17,20 @@ const messageSchema = new mongoose.Schema(
       enum: ["sent", "delivered", "read"],
       default: "sent",
     },
+    deleted: { type: Boolean, default: false },
   },
-
-  { timestamps: { createdAt: "sent_at" } }
+  { timestamps: { createdAt: "sent_at", updatedAt: true } }
 );
+
+// Method to mark message as read
+messageSchema.methods.markAsRead = function () {
+  this.read_at = Date.now();
+  this.status = "read";
+  return this.save();
+};
+
+// Optional indexing for performance
+messageSchema.index({ chat: 1, sent_at: -1 });
 
 const Message = mongoose.model("Message", messageSchema);
 module.exports = Message;

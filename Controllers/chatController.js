@@ -1,20 +1,22 @@
 const Chat = require("../Models/Chat");
-const Message = require("../Models/Message");
+const AppError = require("../utils/Error");
 
-//***createChat -->Purpose: Creates a new chat between a client and a freelancer. Checks if the chat already exists to prevent duplicates.Parameters: senderId, receiverId.Returns: The chat object or existing chat if found
-
-export const createChat = async (req, res) => {
+// *** createChat
+// Purpose: Create a new chat between two users if it doesn't already exist.
+const createChat = async (req, res, next) => {
   const { senderId, receiverId } = req.body;
   try {
     // Check if a chat already exists between the two participants
     let chat = await Chat.findOne({
       participants: { $all: [senderId, receiverId] },
     });
+
     // If chat exists, return the existing chat
     if (chat) {
       return res.status(200).json(chat);
     }
-    //if chat does not exist, create a new chat
+
+    // Create a new chat if one doesn't exist
     chat = new Chat({
       participants: [senderId, receiverId],
     });
@@ -23,26 +25,77 @@ export const createChat = async (req, res) => {
     res.status(201).json(savedChat);
   } catch (error) {
     console.error("Error creating chat:", error);
-    res.status(500).json({ error: "Error creating chat" });
+    next(new AppError("Error creating chat", 500));
   }
 };
-//***  sendMessage -->Purpose: Sends a message from a client or freelancer in a specific chat and emits it via Socket.IO for real-time updates.Parameters: chatId, senderId, text.Returns: The sent message object.
-export const sendMessage = async (req, res) => {
-  const { chatId, senderId, message } = req.body;
+
+// *** findChat
+// Purpose: Find an existing single chat between two users.
+const findChat = async (req, res, next) => {
+  const { firstId, secondId } = req.params;
 
   try {
-  } catch (error) {}
+    const chat = await Chat.findOne({
+      participants: { $all: [firstId, secondId] },
+    });
+
+    // Return chat if found
+    if (chat) {
+      return res.status(200).json(chat);
+    } else {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+  } catch (error) {
+    console.error("Error finding chat:", error);
+    next(new AppError("Error finding chat", 500));
+  }
 };
-//***getChatHistory -->Purpose: Retrieves the entire message history for a specific chat between the client and freelancer.Parameters: chatId.Returns: An array of messages
 
-//***markMessageAsRead-->Purpose: Marks a specific message as read, updating its status accordingly. This helps clients and freelancers know which messages have been seen.Parameters: messageId.Returns: The updated message object.
+// *** userChats
 
-//***getUnreadMessageCount-->Purpose: Counts the number of unread messages for a specific user (either client or freelancer).Parameters: userId.Returns: Count of unread messages.
+// Purpose: Retrieve all chats for a specific user.
+const userChats = async (req, res, next) => {
+  const { userId } = req.params;
 
-//***userChats-->Purpose: Retrieves all chats that a specific user (client or freelancer) is involved iParameters: userId.Returns: An array of chats.
+  try {
+    const chats = await Chat.find({
+      participants: { $in: [userId] },
+    }).populate("participants", "name profile_image"); // Populate participant details
 
-//***findChat -->Purpose: Finds an existing chat between two specific users (client and freelancer). Parameters: firstId, secondId. Returns: The chat object if found.
+    // Return all chats for the user
+    res.status(200).json(chats);
+  } catch (error) {
+    console.error("Error retrieving user chats:", error);
+    next(new AppError("Error retrieving user chats", 500));
+  }
+};
 
-//***deleteChat deleteChat-->   Purpose: Allows a user to delete a chat if necessary (with confirmation) Parameters: chatId. Returns: A success message or an error
+// *** deleteChat
+// Purpose: Delete a specific chat by its chat ID.
+const deleteChat = async (req, res, next) => {
+  const { chatId } = req.params;
 
-// ***getActiveUsers -->Purpose: Retrieves a list of active users (clients or freelancers) currently online or available for chat. -->Returns: An array of user objects.
+  try {
+    const chat = await Chat.findById(chatId);
+
+    // If the chat doesn't exist
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    await Chat.findByIdAndDelete(chatId);
+
+    // Return success message
+    res.status(200).json({ message: "Chat deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting chat:", error);
+    next(new AppError("Error deleting chat", 500));
+  }
+};
+
+module.exports = {
+  createChat,
+  findChat,
+  userChats,
+  deleteChat,
+};

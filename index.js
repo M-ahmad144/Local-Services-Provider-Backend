@@ -2,16 +2,17 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-
+const morgan = require("morgan");
 // Import routers
 const serviceProviderRouter = require("./Routes/ServiceProvider");
 const signingoogle = require("./Routes/Signingoogle");
 const profileRouter = require("./Routes/Profile");
 const userRouter = require("./Routes/User");
+const chatRoutes = require("./Routes/chatRoutes");
+const messageRoutes = require("./Routes/messagesRoutes");
 
 // Global error handler middleware
-const globalErrorHandler = require("./middlewares/globalErrorHaandler");
+const globalErrorHandler = require("./middlewares/globalErrorHandler");
 
 // Sign in with Google
 const { OAuth2Client } = require("google-auth-library");
@@ -24,6 +25,7 @@ const app = express();
 
 // Middleware setup
 app.use(express.json());
+app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors());
 
@@ -32,6 +34,8 @@ app.use("/serviceProvider", serviceProviderRouter);
 app.use("/profile", profileRouter);
 app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
+app.use("/chat", chatRoutes);
+app.use("/messages", messageRoutes);
 
 // Global error handler
 app.use(globalErrorHandler);
