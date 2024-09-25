@@ -1,40 +1,58 @@
 const User = require('../Models/User');
 
-const UpdateProfile = async (req, res) => {
-    console.log('UpdateProfile function called'); 
-    const data = req.body;
-    const user_id = req.params.user_id; // Get the user_id from params
-    console.log(data);
+
+
+
+const GetProfileById = async (req, res) => {
+    const user_id = req.params.user_id;
+
     try {
         // Find the user by ID
-        const existingUser = await User.findById(user_id);
-        
-        if (!existingUser) {
+        const userProfile = await User.findById(user_id);
+
+        // If no user is found, return a 404 error
+        if (!userProfile) {
             return res.status(404).json({ error: "User not found." });
         }
 
-        // Update fields only if they are provided
-        if (data.name) existingUser.name = data.name;
-        if (data.location) existingUser.location = data.location;
-        if (data.profile_description) existingUser.profile_description = data.profile_description;
-        if (data.profile_image) existingUser.profile_image = data.profile_image;
+        // If user is found, return the profile data
+        res.status(200).json(userProfile);
+    } catch (error) {
+        console.error("Error retrieving profile:", error);
+        res.status(500).json({ error: "An error occurred while retrieving the profile." });
+    }
+};
 
-        // Add new skills to the existing skills array
-        if (data.skills && Array.isArray(data.skills)) {
-            existingUser.skills = Array.from(new Set([...existingUser.skills, ...data.skills])); // Merge and remove duplicates
+
+
+
+const UpdateProfile = async (req, res) => {
+    const data = req.body;
+    const user_id = req.params.user_id;
+
+    try {
+
+        const updateFields = {
+            name: data.name,
+            location: data.location,
+            profile_description: data.profileDescription,
+            profile_image: data.profile_image,
+            skills: data.skills,
+            language: data.languages,
+            updated_at: new Date()
+        };
+        
+
+        const updatedProfile = await User.findOneAndUpdate(
+            { _id: user_id },
+            { $set: updateFields }, 
+            { new: true, upsert: false } 
+        );
+
+        if (!updatedProfile) {
+            return res.status(404).json({ error: "User not found." });
         }
 
-        // Update proficiency
-        if (data.language && Array.isArray(data.language)) {
-            existingUser.language = data.language.map(item => ({
-                name: item.name, // Use `name` for the language
-                level: item.level // Use `level` for the proficiency level
-            })); // This replaces the existing proficiency array
-        }
-
-        existingUser.updated_at = new Date(); 
-
-        const updatedProfile = await existingUser.save();
 
         res.status(200).json(updatedProfile);
     } catch (error) {
@@ -43,6 +61,8 @@ const UpdateProfile = async (req, res) => {
     }
 };
 
+
 module.exports = {
-    UpdateProfile
+    UpdateProfile,
+    GetProfileById
 };

@@ -21,27 +21,6 @@ const userSchema = new mongoose.Schema(
     rating: { type: Number, default: 0 },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
-
-    services: [{ type: mongoose.Schema.Types.ObjectId, ref: "Service" }],
-    orders: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Order", default: [] },
-    ],
-    freelancerOrders: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Order", default: [] },
-    ],
-    reviews: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Review", default: [] },
-    ],
-    transactions: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Transaction", default: [] },
-    ],
-    messagesSent: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Message", default: [] },
-    ],
-    messagesReceived: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Message", default: [] },
-    ],
-
     language: [
       {
         name: { type: String, required: true },
