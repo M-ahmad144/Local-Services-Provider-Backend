@@ -15,6 +15,7 @@ const getAllServices = async (req, res) => {
 const createService = async (req, res) => {
   const data = req.body.formData; // Assuming the data is sent in the request body
   try {
+    console.log(data)
     const newService = await Service.create({
       user_id: req.body.userId, 
       title: data.serviceTitle,

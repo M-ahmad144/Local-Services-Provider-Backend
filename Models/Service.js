@@ -14,8 +14,8 @@ const serviceSchema = new mongoose.Schema(
     service_keywords: { type: String }, // Keywords for service
     service_tags: { type: String }, // Tags for service
     service_location: { type: String }, // Location of service
-    availability_start: { type: Date }, // Availability start date
-    availability_end: { type: Date }, // Availability end date
+    availability_start: { type: String }, // Availability start date
+    availability_end: { type: String }, // Availability end date
     detailed_pricing: { type: String }, // Details of pricing
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
