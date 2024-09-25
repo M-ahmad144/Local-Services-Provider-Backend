@@ -17,60 +17,89 @@ let Transport = nodemailer.createTransport({
   });
 
   //login and Sigun up function
-const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-  
-    // Check if user exists
-    console.log(email);
+  const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+};
 
-    return res.status(200).json({ success: true, message: "User logged in successfully" });
-    });     
-
-// Sigun up function
-
+// Sign up function
 const signup = asyncHandler(async (req, res) => {
+    const { fullName, email, password } = req.body;
 
-
-    const { email,name, password } = req.body;
-    console.log(email);
-    console.log(name);
     // Check if user exists
-    let user = await User.findOne({
-      email,
-    });
-
+    let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: "User already exists" });
+        return res.status(400).json({ message: "User already exists" });
     }
-    // encrypt password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Encrypt password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create user
     user = new User({
-      name,
-      email,
-      password: hashedPassword,
+        name: fullName,
+        email,
+        password: hashedPassword,
+        user_type: "buyer",
     });
 
     await user.save();
-    // send OTP verification email
 
-    res.status(200).json({
-      success: true,
-      message: "User registered successfully",
-      Data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-      },
+    // Generate token
+    const token = generateToken(user._id);
+
+    // Set token in cookie
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
+    res.status(201).json({
+        success: true,
+        message: "User registered successfully",
+        data: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+        },
+    });
+});
+
+// Login function
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    console.log(email);
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(400).json({ message: "User not found" });
+    }
+    console.log(user);
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
     
+    console.log(isMatch);
+    if (!isMatch) {
+        return res.status(400).json({ message: "Invalid credentials dadad" });
+    }
 
+    console.log(user._id);
+    // Generate token
+    const token = generateToken(user._id);
+    console.log(token);
 
+    // Set token in cookie
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
 
-  });
+    return res.status(200).json({success: true, message: "User logged in successfully", data: { _id: user._id, name: user.name, email: user.email }});
+});
+
 
     // 
 
