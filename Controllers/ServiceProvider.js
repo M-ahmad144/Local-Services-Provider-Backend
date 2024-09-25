@@ -23,6 +23,14 @@ const createService = async (req, res) => {
       price: data.servicePrice,
       delivery_time: data.deliveryTime,
       service_images: data.coverImage,
+      additional_features: data.additionalFeatures,
+      revision_count: data.revisionCount,
+      service_keywords: data.serviceKeywords,
+      service_tags: data.serviceTags,
+      service_location: data.serviceLocation,
+      availability_start: data.availabilityStart,
+      availability_end: data.availabilityEnd,
+      detailed_pricing: data.detailedPricing,
     });
 
     res.status(201).json(newService);
@@ -48,6 +56,14 @@ const update = async (req, res) => {
         price: data.servicePrice,
         delivery_time: data.deliveryTime,
         service_images: data.coverImage,
+        additional_features: data.additionalFeatures,
+        revision_count: data.revisionCount,
+        service_keywords: data.serviceKeywords,
+        service_tags: data.serviceTags,
+        service_location: data.serviceLocation,
+        availability_start: data.availabilityStart,
+        availability_end: data.availabilityEnd,
+        detailed_pricing: data.detailedPricing,
       }
     );
 
