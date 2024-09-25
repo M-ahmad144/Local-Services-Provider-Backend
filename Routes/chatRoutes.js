@@ -16,7 +16,7 @@ router.post("/create", createChat);
 router.get("/find/:firstId/:secondId", findChat);
 
 // Route for retrieving all chats for a user
-router.get("/users/:userId", userChats);
+router.get("/user/:userId", userChats);
 
 // Route for deleting a chat
 router.delete("/delete/:chatId", deleteChat);
