@@ -1,7 +1,7 @@
 const express = require('express');
 const { 
   createService, 
-  updateService, 
+  update, 
   getServiceByID, 
   getAllServices, 
   getServicesByUserID, 
@@ -15,7 +15,7 @@ router.param('service_id', getServiceByID)
 router.post('/add-service', createService);
 
 // Update a service by service_id (use PATCH to update)
-router.patch('/edit-service/:service_id', updateService);
+router.put('/edit-service/:service_id', update);
 
 // Get all services (no parameters)
 router.get('/get-all-services', getAllServices);
