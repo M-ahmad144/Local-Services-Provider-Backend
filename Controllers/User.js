@@ -72,36 +72,56 @@ const signup = asyncHandler(async (req, res) => {
 
 // Login function
 const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-    console.log(email);
-
-    // Check if user exists
-    const user = await User.findOne({ email });
-    if (!user) {
-        return res.status(400).json({ message: "User not found" });
-    }
-    console.log(user);
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
-    
-    console.log(isMatch);
-    if (!isMatch) {
-        return res.status(400).json({ message: "Invalid credentials dadad" });
-    }
-
-    console.log(user._id);
-    // Generate token
-    const token = generateToken(user._id);
-    console.log(token);
-   
-
-    // Set token in cookie
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Set to true in production
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
-
+  const { email, password } = req.body;
+  console.log(email);
+  
+  // Check if user exists
+  const user = await User.findOne({ email });
+  if (!user) {
+      return res.status(400).json({ message: "User not found" });
+  }
+  
+  // Check if user is verified
+  if (!user.verify) {
+      return res.status(400).json({ message: "Please verify your email before logging in" });
+  }
+  
+  console.log(user);
+  
+  // Check password
+  const isMatch = await bcrypt.compare(password, user.password);
+  console.log(isMatch);
+  
+  if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+  }
+  
+  console.log(user._id);
+  
+  // Generate token
+  const token = generateToken(user._id);
+  console.log(token);
+  
+  // Set token in cookie
+  res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  });
+  
+  // Send success response
+  return res.status(200).json({ 
+      success: true, 
+      message: "Login successful", 
+      token,
+      data: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          type: user.user_type,
+      }, 
+  });
+  
     return res.status(200).json({success: true, message: "User logged in successfully", data: { _id: user._id, name: user.name, email: user.email }});
 });
 
@@ -155,17 +175,20 @@ const sendOTP = async ({ _id, email }, res) => {
   
   const verifyEmail = asyncHandler(async (req, res) => {
     const { userId, otp } = req.body;
-    // console.log(userId, otp);
+    console.log(userId, otp);
   
     // Find the OTP verification record for the user
     const userOTPVerificationRecord = await UserOTPVerification.findOne({
       user: userId,
     });
-    const useremail= await User.findById(userId);
-    // console.log(useremail);
-    const email=useremail.email;
+    const useremail = await User.findById(userId);
+    
+    if (!useremail) {
+      return res.status(404).json({ message: "User not found" });
+    }
   
-    // console.log(userOTPVerificationRecord);
+    const email = useremail.email;
+    console.log(useremail);
   
     if (!userOTPVerificationRecord) {
       return res.status(400).json({ message: "Invalid OTP" });
@@ -174,7 +197,6 @@ const sendOTP = async ({ _id, email }, res) => {
     // Check if OTP is expired
     const { expires_at, otp: hashedOTP } = userOTPVerificationRecord;
     const isExpired = expires_at < Date.now();
-    // console.log(isExpired);
   
     if (isExpired) {
       return res.status(400).json({ message: "OTP expired" });
@@ -187,12 +209,27 @@ const sendOTP = async ({ _id, email }, res) => {
   
       if (isMatch) {
         // OTP matched, update user as verified
-        console.log("OTP matched, update user as verified");
-        // await User.findByIdAndUpdate(userId, { isVerified: true });
-        useremail.isVerified=true;
+        console.log("OTP matched, updating user as verified");
+        
+        // Update user verify status
+        const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { verify: true },
+          { new: true } // Ensure it returns the updated document
+        );
+        console.log(updatedUser.verify);
+        if (!updatedUser) {
+          return res.status(400).json({ message: "Failed to verify user" });
+        }
+  
         await UserOTPVerification.deleteMany({ user: userId });
         console.log("Email verified successfully");
-        return res.status(200).json({ success: true, message: "Email verified successfully" ,email:email });
+  
+        return res.status(200).json({
+          success: true,
+          message: "Email verified successfully",
+          email: updatedUser.email,
+        });
       } else {
         return res.status(400).json({ message: "Invalid OTP" });
       }
@@ -201,7 +238,7 @@ const sendOTP = async ({ _id, email }, res) => {
       return res.status(500).json({ message: "Server error" });
     }
   });
-
+  
 
   module.exports={
 
