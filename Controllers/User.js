@@ -50,6 +50,8 @@ const signup = asyncHandler(async (req, res) => {
     const token = generateToken(user._id);
     console.log(token)
     // Set token in cookie
+    // send otp
+    sendOTP()
     res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Set to true in production
@@ -90,6 +92,7 @@ const login = asyncHandler(async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
     console.log(token);
+    await sendOTP({ _id: user._id, email: user.email }, res);
 
     // Set token in cookie
     res.cookie('token', token, {
@@ -104,59 +107,49 @@ const login = asyncHandler(async (req, res) => {
 
     // 
 
-  // send otp verification email
+  // Send OTP verification email
 const sendOTP = async ({ _id, email }, res) => {
-    try {
-      // console.log("send otp 1 ");
+  try {
       const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-  
-      // mail options
+
+      // Mail options
       let mailOptions = {
-        from: "rrcode6681@gmail.com",
-        to: email,
-        subject: "Please confirm your account",
-        html: `Hello,<br> Please confirm your account by entering the following OTP: <b>${otp}</b>
-      <br>OTP is valid for 10 minutes only.<br>`,
+          from: process.env.MAILER,
+          to: email,
+          subject: "Please confirm your account",
+          html: `Hello,<br> Please confirm your account by entering the following OTP: <b>${otp}</b>
+                 <br>OTP is valid for 10 minutes only.<br>`,
       };
-      // console.log("send otp 2 ");
-  
-  // console.log(otp)
-      //hash the otp
+
+      // Hash the OTP
       const salt = await bcrypt.genSalt(5);
-  // console.log(otp,salt)
-  
-  const UserId= await User.findById(_id);
-  // console.log(UserId);
-  
       const hashedOTP = await bcrypt.hash(otp, salt);
-    
-   const   fOTP = new UserOTPVerification({
-        user: UserId._id,
-        otp: hashedOTP,
-        createdAt: new Date(Date.now()),
-        expires_at: new Date(Date.now() + 10 * 60000)
+
+      const fOTP = new UserOTPVerification({
+          user: _id,
+          otp: hashedOTP,
+          createdAt: new Date(Date.now()),
+          expires_at: new Date(Date.now() + 10 * 60000)
       });
-      console.log(fOTP);  
-      // console.log(fOTP);
+
       await fOTP.save();
-      // console.log("send otp 3 ");
-  
-      //send mail
+
+      // Send mail
       await Transport.sendMail(mailOptions);
-      
-  
+
       res.status(200).json({
-        success: true,
-        message: "OTP sent successfully",
-        Data: {
-          _id: _id,
-          email: email,
-        },
+          success: true,
+          message: "OTP sent successfully",
+          Data: {
+              _id,
+              email,
+          },
       });
-    } catch (error) {
+  } catch (error) {
       res.status(500).json({ error: "Server error" });
-    }
-  };
+  }
+};
+
   // verify email
   
   const verifyEmail = asyncHandler(async (req, res) => {
