@@ -50,8 +50,7 @@ const signup = asyncHandler(async (req, res) => {
     const token = generateToken(user._id);
     console.log(token)
     // Set token in cookie
-    // send otp
-    sendOTP()
+    await sendOTP({ _id: user._id, email: user.email }, res);
     res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Set to true in production
@@ -92,7 +91,7 @@ const login = asyncHandler(async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
     console.log(token);
-    await sendOTP({ _id: user._id, email: user.email }, res);
+   
 
     // Set token in cookie
     res.cookie('token', token, {
