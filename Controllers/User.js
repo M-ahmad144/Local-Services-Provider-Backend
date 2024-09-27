@@ -111,11 +111,11 @@ const login = asyncHandler(async (req, res) => {
   // Send OTP verification email
 const sendOTP = async ({ _id, email }, res) => {
   try {
-      const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    const otp = `${Math.floor(100000 + Math.random() * 900000)}`;
 
       // Mail options
       let mailOptions = {
-          from: process.env.MAILER,
+          from: "noreply@gmail.com",
           to: email,
           subject: "Please confirm your account",
           html: `Hello,<br> Please confirm your account by entering the following OTP: <b>${otp}</b>
