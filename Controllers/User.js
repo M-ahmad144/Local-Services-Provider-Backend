@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 const User = require("../Models/User");
-const sendEmail = require("../Utils/sendEmail");
+const UserOTPVerification = require("../Models/UserOTPVerification");
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 dotenv.config();
