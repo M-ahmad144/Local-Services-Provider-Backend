@@ -24,13 +24,14 @@ let Transport = nodemailer.createTransport({
 // Sign up function
 const signup = asyncHandler(async (req, res) => {
     const { fullName, email, password } = req.body;
-
+    console.log(fullName,email)
+    
     // Check if user exists
     let user = await User.findOne({ email });
     if (user) {
         return res.status(400).json({ message: "User already exists" });
     }
-
+    
     // Encrypt password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -42,12 +43,12 @@ const signup = asyncHandler(async (req, res) => {
         password: hashedPassword,
         user_type: "buyer",
     });
-
+    
     await user.save();
 
     // Generate token
     const token = generateToken(user._id);
-
+    console.log(token)
     // Set token in cookie
     res.cookie('token', token, {
         httpOnly: true,

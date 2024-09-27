@@ -10,6 +10,7 @@ const profileRouter = require("./Routes/Profile");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
+const connectDB = require("./server");
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");

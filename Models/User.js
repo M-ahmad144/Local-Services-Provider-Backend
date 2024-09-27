@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema(
       {
         name: { type: String, required: true },
         level: { type: String, required: true },
+
+        
       },
     ],
     skills: [{ type: String }],
