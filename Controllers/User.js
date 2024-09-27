@@ -206,5 +206,6 @@ const sendOTP = async ({ _id, email }, res) => {
   module.exports={
 
     login,
-    signup
+    signup,
+    verifyEmail,
   }
