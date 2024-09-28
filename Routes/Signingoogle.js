@@ -3,6 +3,7 @@ const { OAuth2Client } = require('google-auth-library'); // Import the Google OA
 const dotenv = require('dotenv');
 const mongoose = require("mongoose"); // Import mongoose module that will be used to connect to MongoDB.
 const User = require('../Models/User'); // Import the User model
+const { verify } = require('jsonwebtoken');
 
 dotenv.config();
 
@@ -45,12 +46,14 @@ router.post('/', async (req, res) => {
         email,
         name,
         password: 'google', // Consider using a hashed password for security
-        user_type: 'freelancer', // Set user type
+        user_type: 'buyer', // Set user type
+        verify: true, // Set user as verified
       });
       await user.save(); // Save the new user to the database
       console.log('User created:', user);
     } else {
       console.log('User already exists:', user);
+      res.status(400).json({ message: 'User already exists', user,success:false }); // Return user info if needed
     }
 
     res.status(200).json({ message: 'User processed successfully', user }); // Return user info if needed
