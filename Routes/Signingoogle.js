@@ -53,7 +53,8 @@ router.post('/', async (req, res) => {
       console.log('User created:', user);
     } else {
       console.log('User already exists:', user);
-      res.status(400).json({ message: 'User already exists', user,success:false }); // Return user info if needed
+      res.status(200).json({ message: 'User processed successfully', user }); // Return user info
+      
     }
 
     res.status(200).json({ message: 'User processed successfully', user }); // Return user info if needed
