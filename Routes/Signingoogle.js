@@ -7,7 +7,6 @@ const { verify } = require('jsonwebtoken');
 
 dotenv.config();
 
-
 const router = express.Router();
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Initialize the client with the environment variable
 
@@ -53,14 +52,16 @@ router.post('/', async (req, res) => {
       console.log('User created:', user);
     } else {
       console.log('User already exists:', user);
-      res.status(200).json({ message: 'User processed successfully', user }); // Return user info
-      
     }
 
-    res.status(200).json({ message: 'User processed successfully', user }); // Return user info if needed
+    // Send the response once
+    res.status(200).json({ message: 'User processed successfully', user });
+
   } catch (error) {
     console.error('Error with Google sign-in:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    if (!res.headersSent) { // Ensure that headers haven't been sent before sending an error response
+      res.status(500).json({ error: 'Internal server error' });
+    }
   }
 });
 
