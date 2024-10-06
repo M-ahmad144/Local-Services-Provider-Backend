@@ -26,8 +26,7 @@ const sendMessage = async (req, res, next) => {
       "sender",
       "name profile_image"
     );
-
-    res.status(201).json(populatedMessage);
+    return populatedMessage;
   } catch (error) {
     console.error("Error sending message:", error);
     next(new AppError("Error sending message", 500));

@@ -1,5 +1,6 @@
 const connectDB = require("./config/db");
 const app = require("./index");
+const socket = require('./sockets/socket')
 
 //uncaught Exception
 process.on("uncaughtException", (err) => {
@@ -21,7 +22,7 @@ connectDB();
 const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
+socket(server)
 //unhandeled promise(async) rejection
 process.on("unhandledRejection", (err) => {
   console.log("Unhandled Rejection:");
