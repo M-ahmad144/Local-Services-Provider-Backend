@@ -3,7 +3,7 @@ const Service = require('../Models/Service')
 
 const getAllServices = async (req, res) => {
   try {
-    const services = await Service.find()
+    const services = await Service.find().populate('user_id', 'profile_image name location');
 
     res.status(200).json(services);
   } catch (error) {
