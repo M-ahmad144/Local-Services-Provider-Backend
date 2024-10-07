@@ -23,7 +23,7 @@ let Transport = nodemailer.createTransport({
 
 // Sign up function
 const signup = asyncHandler(async (req, res) => {
-    const { fullName, email, password,user_type } = req.body;
+    const { fullName, email, password } = req.body;
     console.log(fullName,email)
     
     // Check if user exists
@@ -43,7 +43,7 @@ const signup = asyncHandler(async (req, res) => {
         name: fullName,
         email,
         password: hashedPassword,
-        user_type,
+        user_type: 'buyer',
     });
     
     await user.save();
