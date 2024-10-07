@@ -24,11 +24,16 @@ dotenv.config();
 // Initialize express app
 const app = express();
 
+const corsOptions = {
+    origin: ['https://myneighbourly.vercel.app/', 'http://localhost:5173/'], // List of allowed origins
+  };
+
+  
 // Middleware setup
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Set up routes
 app.use("/serviceProvider", serviceProviderRouter);
