@@ -71,6 +71,27 @@ const signup = asyncHandler(async (req, res) => {
     });
 });
 
+const roleSelection = asyncHandler(async (req, res) => {
+  const { email, role } = req.body;
+
+  // Check if user exists
+  const user = await User.findOne({ email });
+
+  if (!user) {
+
+      return res.status(400).json({ message: "User not found" });
+  }
+
+  user.user_type = role;
+  await user.save();
+
+  return res.status(200).json({ success: true, message: "Role selected successfully", data: { _id: user._id, name: user.name, email: user.email, type: user.user_type } });
+
+
+
+  });
+
+
 // Login function
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -246,4 +267,5 @@ const sendOTP = async ({ _id, email }, res) => {
     login,
     signup,
     verifyEmail,
+    roleSelection
   }
