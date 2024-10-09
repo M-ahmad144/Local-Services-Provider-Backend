@@ -27,7 +27,30 @@ const CreateOrder = async (req,res,next) =>{
 }
 
 
+const GetPendingOrders = async (req, res, next) => {
+    const { user_type } = req.body;
+    console.log(user_type)
+    try {
+        let orders;
+
+        if (user_type === 'buyer') {
+            orders = await Orders.find({ buyer_id: req.body.user_id, order_status: 'pending' });
+        } else if (user_type === 'service_provider') {
+            orders = await Orders.find({ service_provider_id: req.body.user_id, order_status: 'pending' });
+        } else {
+            return res.status(400).json({ error: 'Invalid user_type provided' });
+        }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching pending orders:', error);
+        res.status(500).json({ error: 'Error fetching pending orders' });
+    }
+};
+
+
+
 module.exports = {
     CreateOrder,
-    
+    GetPendingOrders
 };
