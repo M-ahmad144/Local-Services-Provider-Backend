@@ -73,7 +73,7 @@ const signup = asyncHandler(async (req, res) => {
 
 const roleSelection = asyncHandler(async (req, res) => {
   const { email, role } = req.body;
-
+  console.log(email,role);
   // Check if user exists
   const user = await User.findOne({ email });
 
@@ -157,7 +157,7 @@ const sendOTP = async ({ _id, email }, res) => {
 
       // Mail options
       let mailOptions = {
-          from: "noreply@gmail.com",
+          from: "robassatif@gmail.com",
           to: email,
           subject: "Please confirm your account",
           html: `Hello,<br> Please confirm your account by entering the following OTP: <b>${otp}</b>
