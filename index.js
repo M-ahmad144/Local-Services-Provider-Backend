@@ -25,15 +25,18 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-<<<<<<< Updated upstream
-  origin: ['https://myneighbourly.vercel.app', 'http://localhost:5173', 'https://testchat-dusky.vercel.app'], // List of allowed origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE' , 'PATCH'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-=======
+  origin: [
+    "https://myneighbourly.vercel.app",
+    "http://localhost:5173",
+    "https://testchat-dusky.vercel.app",
+  ], // List of allowed origins
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+
   origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
->>>>>>> Stashed changes
+
   credentials: true, // Enable credentials (if needed)
 };
 

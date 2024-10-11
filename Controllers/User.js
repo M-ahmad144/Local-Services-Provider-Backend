@@ -113,21 +113,21 @@ const login = asyncHandler(async (req, res) => {
   });
 
   // Send success response
-<<<<<<< Updated upstream
-  return res.status(200).json({ 
-      success: true, 
-      message: "Login successful", 
-      token,
-      data: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          user_type: user.user_type,
-      }, 
+
+  return res.status(200).json({
+    success: true,
+    message: "Login successful",
+    token,
+    data: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      user_type: user.user_type,
+    },
   });
-  
-    // return res.status(200).json({success: true, message: "User logged in successfully", data: { _id: user._id, name: user.name, email: user.email }});
-=======
+
+  // return res.status(200).json({success: true, message: "User logged in successfully", data: { _id: user._id, name: user.name, email: user.email }});
+
   return res.status(200).json({
     success: true,
     message: "Login successful",
@@ -140,7 +140,6 @@ const login = asyncHandler(async (req, res) => {
       image: user.profile_image,
     },
   });
->>>>>>> Stashed changes
 });
 
 const logout = asyncHandler(async (req, res) => {
