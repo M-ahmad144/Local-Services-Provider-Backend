@@ -1,20 +1,18 @@
+const express = require("express");
+const {
+  signup,
+  login,
+  verifyEmail,
+  roleSelection,
+  logout,
+} = require("../Controllers/User");
 
-const express = require('express');
-const {signup,login,verifyEmail,roleSelection} = require('../Controllers/User');
-const { route } = require('./ServiceProvider');
+const router = express.Router();
 
-const router=express.Router();
+router.post("/signup", signup);
+router.post("/login", login);
+router.post("/logout", logout);
+router.post("/role-selection", roleSelection);
+router.post("/OTP-verification", verifyEmail);
 
-
-router.post('/signup',signup);
-
-router.post('/login',login);
-router.post('/role-selection',roleSelection);
-
-router.post('/OTP-verification',verifyEmail)
-
-
-
-module.exports=router;
-
-
+module.exports = router;
