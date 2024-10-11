@@ -140,7 +140,7 @@ const login = asyncHandler(async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          user_type: user.user_type,
+          type: user.user_type,
       }, 
   });
   
