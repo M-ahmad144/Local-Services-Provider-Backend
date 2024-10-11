@@ -52,6 +52,7 @@ router.post('/', async (req, res) => {
       console.log('User created:', user);
     } else {
       verifyuser=await User.findOneAndUpdate({email},{verify:true})
+      
       verifyuser.save();
       verifyuser.verify=true;
       console.log('User already exists:', verifyuser);
