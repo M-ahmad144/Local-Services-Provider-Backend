@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
         email,
         name,
         password: 'google', // Consider using a hashed password for security
-        user_type: 'buyer', // Set user type
+        type: 'buyer', // Set user type
         verify: true, // Set user as verified
       });
       await user.save(); // Save the new user to the database
