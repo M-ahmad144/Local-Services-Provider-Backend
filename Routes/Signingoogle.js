@@ -64,6 +64,7 @@ router.post('/', async (req, res) => {
     console.error('Error with Google sign-in:', error);
     if (!res.headersSent) { // Ensure that headers haven't been sent before sending an error response
       res.status(500).json({ error: 'Internal server error' });
+      
     }
   }
 });
