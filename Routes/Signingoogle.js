@@ -51,7 +51,10 @@ router.post('/', async (req, res) => {
       await user.save(); // Save the new user to the database
       console.log('User created:', user);
     } else {
-      console.log('User already exists:', user);
+      verifyuser=await User.findOneAndUpdate({email},{verify:true})
+      verifyuser.save();
+      verifyuser.verify=true;
+      console.log('User already exists:', verifyuser);
     }
 
     // Send the response once
@@ -61,6 +64,7 @@ router.post('/', async (req, res) => {
     console.error('Error with Google sign-in:', error);
     if (!res.headersSent) { // Ensure that headers haven't been sent before sending an error response
       res.status(500).json({ error: 'Internal server error' });
+      
     }
   }
 });

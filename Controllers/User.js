@@ -115,7 +115,7 @@ const login = asyncHandler(async (req, res) => {
   console.log(isMatch);
   
   if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid password" });
   }
   
   console.log(user._id);

@@ -15,6 +15,12 @@ const orderSchema = new mongoose.Schema(
     order_date: { type: Date, default: Date.now },
     appointment_date: { type: Date },
     appointment_time : {type:String , required:true},
+    isUpdated : {type:Boolean , default:false},
+    service_provider_price : {type:Number , default:0},
+    service_provider_date: { type: Date , default: Date.now},
+    service_provider_time : {type:String , default:''},
+    accepted_by : {type:String , default:''},
+    rejected_by : {type:String , default:''},
     updated_at: { type: Date, default: Date.now },
   },
   { timestamps: { createdAt: "order_date", updatedAt: "updated_at" } }
