@@ -51,6 +51,7 @@ router.post('/', async (req, res) => {
       await user.save(); // Save the new user to the database
       console.log('User created:', user);
     } else {
+      user.verify = true; // Set user as verified
       console.log('User already exists:', user);
     }
 
