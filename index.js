@@ -11,6 +11,7 @@ const OrderRoutes = require("./Routes/Orders");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
+const reviews = require("./Routes/Review");
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
@@ -55,6 +56,8 @@ app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
+app.use("/reviews", reviews);
+
 
 // Global error handler
 app.use(globalErrorHandler);
