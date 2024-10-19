@@ -1,37 +1,89 @@
-const Jazzcash = require("jazzcash-checkout");
-require("dotenv").config(); // Use dotenv to manage environment variables
+const crypto = require("crypto");
+const axios = require("axios");
 
-// Initialize JazzCash credentials
-Jazzcash.credentials({
-  config: {
-    merchantId: process.env.JAZZCASH_MERCHANT_ID,
-    password: process.env.JAZZCASH_PASSWORD,
-    hashKey: process.env.JAZZCASH_HASH_KEY,
-  },
-  environment: "sandbox", // available environments: 'live' or 'sandbox'
-});
-
-// Export a function to initiate payment
 const initiatePayment = async (req, res) => {
-  try {
-    // Set JazzCash data fields according to your request
-    Jazzcash.setData({
-      pp_Amount: req.body.amount * 100, // Amount in smallest unit (e.g., PKR)
-      pp_BillReference: req.body.orderId, // Unique bill reference
-      pp_Description: req.body.description, // Description of the payment
-      pp_MobileNumber: req.body.mobileNumber, // Mobile number of the payer
-      pp_CNIC: req.body.cnic, // National ID (if required)
-    });
+  const { pp_Amount, pp_BillReference, pp_Description, pp_Language, pp_CNIC } =
+    req.body;
 
-    // Returns JazzCash response
-    const response = await Jazzcash.createRequest("WALLET"); // or "PAY"
-    res.json(response); // Send response back to client
+  // Load environment variables
+  const pp_MerchantID = process.env.JAZZCASH_MERCHANT_ID;
+  const pp_Password = process.env.JAZZCASH_PASSWORD;
+  const IntegeritySalt = process.env.JAZZCASH_HASH_KEY;
+
+  const dateandtime = new Date().toISOString().slice(0, 19).replace("T", "");
+  const dexpiredate = new Date(Date.now() + 86400000)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", ""); // 1 day later
+  const pp_TxnRefNo = `T${dateandtime}`;
+  const pp_TxnType = "MWALLET";
+  const pp_ver = "1.1";
+  const pp_TxnCurrency = "PKR";
+
+  const superdata = [
+    IntegeritySalt,
+    pp_Amount,
+    pp_BillReference,
+    pp_Description,
+    pp_Language,
+    pp_MerchantID,
+    pp_Password,
+    process.env.JAZZCASH_RETURN_URL, // Use your return URL from env
+    pp_TxnCurrency,
+    dateandtime,
+    dexpiredate,
+    pp_TxnRefNo,
+    pp_TxnType,
+    pp_ver,
+    pp_CNIC,
+  ].join("&");
+
+  const hash = crypto
+    .createHmac("sha256", IntegeritySalt)
+    .update(superdata)
+    .digest("hex");
+
+  const paymentData = {
+    pp_Version: pp_ver,
+    pp_TxnType: pp_TxnType,
+    pp_Language: pp_Language,
+    pp_MerchantID: pp_MerchantID,
+    pp_Password: pp_Password,
+    pp_TxnRefNo: pp_TxnRefNo,
+    pp_Amount: pp_Amount,
+    pp_TxnCurrency: pp_TxnCurrency,
+    pp_TxnDateTime: dateandtime,
+    pp_BillReference: pp_BillReference,
+    pp_Description: pp_Description,
+    pp_TxnExpiryDateTime: dexpiredate,
+    pp_ReturnURL: process.env.JAZZCASH_RETURN_URL, // Use your return URL from env
+    pp_CNIC: pp_CNIC,
+    pp_SecureHash: hash,
+  };
+
+  try {
+    // Send paymentData to the JazzCash API
+    const response = await axios.post(
+      "https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction",
+      paymentData
+    );
+
+    // Handle response from JazzCash
+    res.json({ message: "Payment initiated", paymentResponse: response.data });
   } catch (error) {
-    console.error("Error during payment request:", error);
-    res.status(500).send("Error processing payment");
+    console.error("Payment error:", error);
+
+    // If error response is available from JazzCash API
+    if (error.response) {
+      return res.status(500).json({
+        message: "Payment initiation failed",
+        error: error.response.data,
+      });
+    }
+    res
+      .status(500)
+      .json({ message: "Payment initiation failed", error: error.message });
   }
 };
 
-module.exports = {
-  initiatePayment,
-};
+module.exports = { initiatePayment };

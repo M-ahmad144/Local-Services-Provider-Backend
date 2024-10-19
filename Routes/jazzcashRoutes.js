@@ -1,7 +1,7 @@
 const express = require("express");
+const { initiatePayment } = require("../Controllers/jazzcashController");
 const router = express.Router();
-const jazzcashController = require("../Controllers/jazzcashController");
 
-router.post("/initiate-payment", jazzcashController.initiatePayment);
+router.post("/initiate-payment", initiatePayment);
 
 module.exports = router;
