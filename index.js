@@ -12,6 +12,7 @@ const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
 const reviews = require("./Routes/Review");
+const jazzcashRoutes = require("./Routes/jazzcashRoutes");
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
@@ -57,7 +58,7 @@ app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 app.use("/reviews", reviews);
-
+app.use("/jazzcash", jazzcashRoutes);
 
 // Global error handler
 app.use(globalErrorHandler);
