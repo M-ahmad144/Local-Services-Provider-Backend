@@ -57,7 +57,7 @@ app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
-app.use("/reviews", reviews);
+// app.use("/reviews", reviews);
 app.use("/jazzcash", jazzcashRoutes);
 
 // Global error handler
