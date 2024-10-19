@@ -16,7 +16,7 @@ const initiatePayment = async (req, res) => {
     .slice(0, 19)
     .replace("T", ""); // 1 day later
   const pp_TxnRefNo = `T${dateandtime}`;
-  const pp_TxnType = "MWALLET";
+  const pp_TxnType = "MPAY";
   const pp_ver = "1.1";
   const pp_TxnCurrency = "PKR";
 
