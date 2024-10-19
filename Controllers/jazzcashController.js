@@ -2,8 +2,14 @@ const crypto = require("crypto");
 const axios = require("axios");
 
 const initiatePayment = async (req, res) => {
-  const { pp_Amount, pp_BillReference, pp_Description, pp_Language, pp_CNIC } =
-    req.body;
+  const {
+    pp_Amount,
+    pp_BillReference,
+    pp_Description,
+    pp_Language,
+    pp_CNIC,
+    pp_MobileNumber,
+  } = req.body;
 
   // Load environment variables
   const pp_MerchantID = process.env.JAZZCASH_MERCHANT_ID;
@@ -36,6 +42,7 @@ const initiatePayment = async (req, res) => {
     pp_TxnType,
     pp_ver,
     pp_CNIC,
+    pp_MobileNumber, // Include mobile number in superdata
   ].join("&");
 
   const hash = crypto
@@ -58,6 +65,7 @@ const initiatePayment = async (req, res) => {
     pp_TxnExpiryDateTime: dexpiredate,
     pp_ReturnURL: process.env.JAZZCASH_RETURN_URL, // Use your return URL from env
     pp_CNIC: pp_CNIC,
+    pp_MobileNumber: pp_MobileNumber, // Add the mobile number to paymentData
     pp_SecureHash: hash,
   };
 
