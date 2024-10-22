@@ -51,11 +51,8 @@ app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 // app.use("/reviews", reviews);
-<<<<<<< Updated upstream
 app.use("/jazzcash", jazzcashRoutes);
-=======
 
->>>>>>> Stashed changes
 
 // Global error handler
 app.use(globalErrorHandler);
