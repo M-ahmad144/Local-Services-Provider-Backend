@@ -11,13 +11,9 @@ const OrderRoutes = require("./Routes/Orders");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
-<<<<<<< Updated upstream
-const reviews = require("./Routes/Review");
 const jazzcashRoutes = require("./Routes/jazzcashRoutes");
-=======
-// const reviews = require("./Routes/Review");
->>>>>>> Stashed changes
 
+// const reviews = require("./Routes/Review");
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 
