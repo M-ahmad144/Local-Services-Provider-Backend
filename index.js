@@ -11,8 +11,12 @@ const OrderRoutes = require("./Routes/Orders");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
+<<<<<<< Updated upstream
 const reviews = require("./Routes/Review");
 const jazzcashRoutes = require("./Routes/jazzcashRoutes");
+=======
+// const reviews = require("./Routes/Review");
+>>>>>>> Stashed changes
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
@@ -27,13 +31,6 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: [
-    "https://myneighbourly.vercel.app",
-    "http://localhost:5173",
-    "https://testchat-dusky.vercel.app",
-  ], // List of allowed origins
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
 
   origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
@@ -58,7 +55,11 @@ app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 // app.use("/reviews", reviews);
+<<<<<<< Updated upstream
 app.use("/jazzcash", jazzcashRoutes);
+=======
+
+>>>>>>> Stashed changes
 
 // Global error handler
 app.use(globalErrorHandler);
