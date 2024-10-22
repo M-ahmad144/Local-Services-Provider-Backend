@@ -308,7 +308,7 @@ const sendOTP = async ({ _id, email }) => {
 
     // Mail options
     let mailOptions = {
-      from: "robassatif@gmail.com",
+      from: "",
       to: email,
       subject: "Please confirm your account",
       html: `Hello,<br> Please confirm your account by entering the following OTP: <b>${otp}</b>
