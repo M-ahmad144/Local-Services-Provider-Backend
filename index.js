@@ -27,7 +27,6 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-
   origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
@@ -53,14 +52,7 @@ app.use("/messages", messageRoutes);
 // app.use("/reviews", reviews);
 app.use("/jazzcash", jazzcashRoutes);
 
-
 // Global error handler
 app.use(globalErrorHandler);
 
-<<<<<<< Updated upstream
 module.exports = app;
-=======
-module.exports = app;
-
-// http://127.0.0.1:8080/chat/user/66f2ec284541b18600facc9f
->>>>>>> Stashed changes
