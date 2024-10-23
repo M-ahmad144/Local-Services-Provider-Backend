@@ -1,7 +1,11 @@
+// paymentRouter.js
+
 const express = require("express");
-const { initiatePayment } = require("../Controllers/jazzcashController");
+const { checkout } = require("../Controllers/jazzcashController");
+
 const router = express.Router();
 
-router.post("/initiate-payment", initiatePayment);
+// Define the checkout route
+router.post("/checkout/:productId", checkout);
 
 module.exports = router;

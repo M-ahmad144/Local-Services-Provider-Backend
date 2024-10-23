@@ -57,4 +57,10 @@ app.use("/jazzcash", jazzcashRoutes);
 // Global error handler
 app.use(globalErrorHandler);
 
+<<<<<<< Updated upstream
 module.exports = app;
+=======
+module.exports = app;
+
+// http://127.0.0.1:8080/chat/user/66f2ec284541b18600facc9f
+>>>>>>> Stashed changes
