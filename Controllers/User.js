@@ -337,13 +337,41 @@ const sendOTP = async ({ _id, email }) => {
 };
 
 
-// change password
 const updatePassword = asyncHandler(async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+  console.log(email, currentPassword, newPassword);
 
-path=4;
+  // Check if user exists
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return res.status(200).json({success:false, message: "User not found" });
+  }
+  console.log("User found");
 
+  // Check if current password is correct
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    return res.status(200).json({success:false, message: "Incorrect password" });
+  }
+  console.log("Password matched");
 
+  // Ensure the new password is different from the current password
+  if (currentPassword === newPassword) {
+    return res.status(200).json({success:false, message: "New password must be different from the current password" });
+  }
+  console.log("New password is different from the current password");
+
+  // Encrypt new password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+console.log("Password hashed successfully");
+  // Update password
+  user.password = hashedPassword;
+  await user.save();
+console.log("Password updated successfully");
+  res.status(200).json({ success: true, message: "Password updated successfully" });
 });
+
 
 module.exports = {
   login,
