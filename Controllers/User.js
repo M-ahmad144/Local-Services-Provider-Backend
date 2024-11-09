@@ -22,54 +22,54 @@ const generateToken = (id) => {
 };
 
 // Sign up function
-const signup = asyncHandler(async (req, res) => {
-  const { fullName, email, password } = req.body;
-  console.log(fullName, email);
+// const signup = asyncHandler(async (req, res) => {
+//   const { fullName, email, password } = req.body;
+//   console.log(fullName, email);
 
-  // Check if user exists
-  let user = await User.findOne({ email });
-  if (user) {
-    return res
-      .status(400)
-      .json({ message: "User already exists", success: false });
-  }
+//   // Check if user exists
+//   let user = await User.findOne({ email });
+//   if (user) {
+//     return res
+//       .status(400)
+//       .json({ message: "User already exists", success: false });
+//   }
 
-  // Encrypt password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+//   // Encrypt password
+//   const salt = await bcrypt.genSalt(10);
+//   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Create user
-  user = new User({
-    name: fullName,
-    email,
-    password: hashedPassword,
-    user_type: "buyer",
-  });
+//   // Create user
+//   user = new User({
+//     name: fullName,
+//     email,
+//     password: hashedPassword,
+//     user_type: "buyer",
+//   });
 
-  await user.save();
+//   await user.save();
 
-  // Generate token
-  const token = generateToken(user._id);
-  console.log(token);
-  // Set token in cookie
-  await sendOTP({ _id: user._id, email: user.email }, res);
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Set to true in production
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-  });
+//   // Generate token
+//   const token = generateToken(user._id);
+//   console.log(token);
+//   // Set token in cookie
+//   await sendOTP({ _id: user._id, email: user.email }, res);
+//   res.cookie("token", token, {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === "production", // Set to true in production
+//     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+//   });
 
-  res.status(201).json({
-    success: true,
-    message: "User registered successfully",
-    data: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      type: "buyer",
-    },
-  });
-});
+//   res.status(201).json({
+//     success: true,
+//     message: "User registered successfully",
+//     data: {
+//       _id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       type: "buyer",
+//     },
+//   });
+// });
 
 // Login function
 const login = asyncHandler(async (req, res) => {
@@ -248,14 +248,67 @@ const verifyEmail = asyncHandler(async (req, res) => {
   }
 });
 
-// Send OTP verification email
-const sendOTP = async ({ _id, email }, res) => {
+// Sign up function
+const signup = asyncHandler(async (req, res) => {
+  const { fullName, email, password } = req.body;
+  console.log(fullName, email);
+
+  // Check if user exists
+  let user = await User.findOne({ email });
+  if (user) {
+    return res
+      .status(400)
+      .json({ message: "User already exists", success: false });
+  }
+
+  // Encrypt password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  // Create user
+  user = new User({
+    name: fullName,
+    email,
+    password: hashedPassword,
+    user_type: "buyer",
+  });
+
+  await user.save();
+
+  // Generate token
+  const token = generateToken(user._id);
+  console.log(token);
+
+  // Send OTP but don't send a response in sendOTP
+  await sendOTP({ _id: user._id, email: user.email });
+console.log("OTP sent successfully");
+  // Set token in cookie and send response
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Set to true in production
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "User registered successfully and OTP sent.",
+    data: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      type: "buyer",
+    },
+  });
+});
+
+// sendOTP function without response handling
+const sendOTP = async ({ _id, email }) => {
   try {
     const otp = `${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Mail options
     let mailOptions = {
-      from: "robassatif@gmail.com",
+      from: "",
       to: email,
       subject: "Please confirm your account",
       html: `Hello,<br> Please confirm your account by entering the following OTP: <b>${otp}</b>
@@ -270,26 +323,55 @@ const sendOTP = async ({ _id, email }, res) => {
       user: _id,
       otp: hashedOTP,
       createdAt: new Date(Date.now()),
-      expires_at: new Date(Date.now() + 10 * 60000),
+      expires_at: new Date(Date.now() + 10 * 60000), // OTP valid for 10 minutes
     });
 
     await fOTP.save();
 
     // Send mail
     await Transport.sendMail(mailOptions);
-
-    res.status(200).json({
-      success: true,
-      message: "OTP sent successfully",
-      Data: {
-        _id,
-        email,
-      },
-    });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.log(error);
+    throw new Error("Server error");
   }
 };
+
+
+const updatePassword = asyncHandler(async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+  console.log(email, currentPassword, newPassword);
+
+  // Check if user exists
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return res.status(200).json({success:false, message: "User not found" });
+  }
+  console.log("User found");
+
+  // Check if current password is correct
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    return res.status(200).json({success:false, message: "Incorrect password" });
+  }
+  console.log("Password matched");
+
+  // Ensure the new password is different from the current password
+  if (currentPassword === newPassword) {
+    return res.status(200).json({success:false, message: "New password must be different from the current password" });
+  }
+  console.log("New password is different from the current password");
+
+  // Encrypt new password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+console.log("Password hashed successfully");
+  // Update password
+  user.password = hashedPassword;
+  await user.save();
+console.log("Password updated successfully");
+  res.status(200).json({ success: true, message: "Password updated successfully" });
+});
+
 
 module.exports = {
   login,
@@ -297,4 +379,5 @@ module.exports = {
   logout,
   verifyEmail,
   roleSelection,
+  updatePassword,
 };

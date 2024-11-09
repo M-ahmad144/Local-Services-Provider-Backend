@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     language: [
       {
         name: { type: String, required: true },
-        level: { type: String, required: true },
+        level: { type: String },
 
         
       },
@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: { created_at: "created_at", updated_at: "updated_at" } }
 );
+
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
