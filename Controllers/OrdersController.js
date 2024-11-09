@@ -80,7 +80,7 @@ const GetInProgressOrders = async (req, res, next) => {
                                  .populate('service_provider_id', 'name location');
         } else if (user_type === 'service provider') {
             
-            orders = await Orders.find({ service_provider_id: user_id, order_status: 'in progress' })
+            orders = await Orders.find({ service_provider_id: user_id, order_status: { $in: ['in progress', 'pending confirmation'] } })
                                  .populate('buyer_id', 'name location');
         } else {
             return res.status(400).json({ error: 'Invalid user_type provided' });
