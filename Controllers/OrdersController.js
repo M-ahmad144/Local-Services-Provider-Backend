@@ -75,9 +75,8 @@ const GetInProgressOrders = async (req, res, next) => {
     try {
         let orders;
 
-        if (user_type === 'buyer') {
-            
-            orders = await Orders.find({ buyer_id: user_id, order_status: 'in progress' })
+        if (user_type === 'buyer') {            
+            orders = await Orders.find({ buyer_id: user_id, order_status: { $in: ['in progress', 'pending confirmation'] } })
                                  .populate('service_provider_id', 'name location');
         } else if (user_type === 'service provider') {
             
@@ -199,9 +198,63 @@ const orderRejectUpdate = async (req, res, next) => {
     }
 };
 
+const markAsCompletedByFreelancer = async (req, res) => {
+    const { order_id } = req.body;
+  
+    try {
+      const updatedOrder = await Orders.findByIdAndUpdate(
+        order_id,
+        { order_status: "pending confirmation" },
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+  
+      res.status(200).json(updatedOrder);
+    } catch (error) {
+      console.error("Error marking order as completed:", error);
+      res.status(500).json({ error: "Error marking order as completed" });
+    }
+  };
 
+  const confirmOrderCompletion = async (req, res) => {
+    const { order_id, action } = req.body; // action: 'confirm' or 'dispute'
+  
+    try {
+      const status = action === 'confirm' ? "completed" : "in dispute";
+  
+      const updatedOrder = await Orders.findByIdAndUpdate(
+        order_id,
+        { order_status: status },
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+  
+      res.status(200).json(updatedOrder);
+    } catch (error) {
+      console.error("Error confirming order completion:", error);
+      res.status(500).json({ error: "Error confirming order completion" });
+    }
+  };  
 
-
+  const markOrdersAutoComplete = async () => {
+    const timeLimit = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+  
+    try {
+      const updatedOrders = await Orders.updateMany(
+        { order_status: "pending confirmation", updated_at: { $lte: timeLimit } },
+        { order_status: "completed" }
+      );
+    } catch (error) {
+      console.error("Error in automatic order completion:", error);
+    }
+  };
+  
 module.exports = {
     CreateOrder,
     GetPendingOrders,
@@ -209,5 +262,8 @@ module.exports = {
     counterTimeUpdate,
     orderAcceptUpdate,
     GetInProgressOrders,
-    orderRejectUpdate
+    orderRejectUpdate,
+    markAsCompletedByFreelancer,
+    confirmOrderCompletion, 
+    markOrdersAutoComplete
 };

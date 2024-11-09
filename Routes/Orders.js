@@ -7,7 +7,8 @@ const {
     orderAcceptUpdate,
     GetInProgressOrders,
     orderRejectUpdate, 
-    
+    markAsCompletedByFreelancer,
+    confirmOrderCompletion
 
 } = require('../Controllers/OrdersController');
 
@@ -30,6 +31,9 @@ router.patch('/accept' ,  orderAcceptUpdate)
 
 router.patch('/reject' ,  orderRejectUpdate)
 
+router.patch('/complete_by_freelancer', markAsCompletedByFreelancer);
+
+router.patch('/confirm_completion', confirmOrderCompletion);
 
 
 
