@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema(
     service_provider_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     order_status: {
       type: String,
-      enum: ["pending", "in progress", "completed", "cancelled"],
+      enum: ["pending", "in progress", "pending confirmation", "completed", "cancelled", "in dispute"],
       required: true,
     },
     description : {type:String , required:true},
