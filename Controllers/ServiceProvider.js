@@ -5,10 +5,10 @@ const getAllServices = async (req, res) => {
   try {
     const services = await Service.find().populate('user_id', 'profile_image name location');
 
-    return res.status(200).json(services);
+    res.status(200).json(services);
   } catch (error) {
     console.error("Error fetching services:", error);
-    return res.status(500).json({ error: "Error fetching services" });
+    res.status(500).json({ error: "Error fetching services" });
   }
 };
 
@@ -34,10 +34,10 @@ const createService = async (req, res) => {
       detailed_pricing: data.detailedPricing,
     });
 
-    return res.status(201).json(newService);
+    res.status(201).json(newService);
   } catch (error) {
     console.error("Error creating service:", error);
-    return res.status(500).json({ error: "Error creating service" });
+    res.status(500).json({ error: "Error creating service" });
   }
 };
 
@@ -70,11 +70,11 @@ const update = async (req, res) => {
 
     // If no service found, return 404
     if (!updatedService) {
-      return res.status(404).json({ error: 'Service not found' });
+      res.status(404).json({ error: 'Service not found' });
     }
 
     // Return the updated service as a success response
-    return res.status(200)
+    res.status(200)
 
   } catch (error) {
     // Catch and handle any errors, return a single error response
@@ -88,10 +88,9 @@ const deleteService = async (req, res) => {
   const serviceId = req.params.service_id;  // Extract service_id from the URL
   try {
     const deletedService = await Service.findByIdAndDelete(serviceId);
-    return res.status(200)
   } catch (error) {
     console.error("Error deleting service:", error);
-    return res.status(500).json({ error: "Error deleting service" });
+    res.status(500).json({ error: "Error deleting service" });
   }
 };
 
@@ -109,10 +108,10 @@ const getServicesByUserID = async (req, res) => {
     const services = await Service.find({ user_id: userid })
       
       
-    return res.status(200).json(services);
+    res.status(200).json(services);
   } catch (error) {
     console.error("Error fetching user's services:", error);
-    return res.status(500).json({ error: "Error fetching user's services" });
+    res.status(500).json({ error: "Error fetching user's services" });
   }
 };
 
@@ -126,13 +125,13 @@ const getServiceByID = async (req, res, next) => {
     if (service) {
       req.service = service;
       next()
-      return res.status(200).json(service); // Send the service as response
+      res.status(200).json(service); // Send the service as response
     } else {
-      return res.status(404).json({ error: "Service not found" });
+      res.status(404).json({ error: "Service not found" });
     }
   } catch (error) {
     console.error("Error fetching service:", error);
-    return res.status(500).json({ error: "Error fetching service" });
+    res.status(500).json({ error: "Error fetching service" });
   }
 };
 
