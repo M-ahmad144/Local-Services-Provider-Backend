@@ -123,6 +123,7 @@ const login = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       user_type: user.user_type,
+      profile_img : user.profile_image
     },
   });
 
