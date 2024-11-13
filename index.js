@@ -11,20 +11,13 @@ const OrderRoutes = require("./Routes/Orders");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
-// const jazzcashRoutes = require("./Routes/jazzcashRoutes");
 const checkoutRoutes = require("./Routes/stripeCheckout");
 
-// const reviews = require("./Routes/Review");
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 
-// Sign in with Google
-const { OAuth2Client } = require("google-auth-library");
-
-// Load environment variables from .env file
 dotenv.config();
 
-// Initialize express app
 const app = express();
 
 // CORS options
@@ -53,9 +46,7 @@ app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
-// app.use("/reviews", reviews);
-// app.use("/jazzcash", jazzcashRoutes);
-app.use("/create-checkout-session", checkoutRoutes);
+app.use("/payments", checkoutRoutes);
 
 // Global error handler
 app.use(globalErrorHandler);
