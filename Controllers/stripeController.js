@@ -20,7 +20,7 @@ exports.createCheckoutSession = async (req, res) => {
             product_data: {
               name: "Custom Payment",
             },
-            unit_amount: amount,
+            unit_amount: amount, // Amount in cents
           },
           quantity: 1,
         },
