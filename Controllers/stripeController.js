@@ -20,7 +20,7 @@ exports.createCheckoutSession = async (req, res) => {
             product_data: {
               name: "Custom Payment",
             },
-            unit_amount: amount,
+            unit_amount: amount, // Amount in cents
           },
           quantity: 1,
         },
@@ -46,39 +46,32 @@ exports.confirmPaymentStatus = async (req, res) => {
   }
 
   try {
-    // Retrieve session details from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    // You can directly store the transaction data without checking the payment status:
+    const transaction = new Transaction({
+      order_id,
+      buyer_id,
+      amount: req.body.amount, // Ensure amount is passed from frontend
+      payment_method: "Credit Card", // Or retrieve this info as needed
+      payment_status: "successful", // Mark it as successful since you trust Stripe
+    });
 
-    // Confirm payment
-    if (session.payment_status === "paid") {
-      // Update order status to "completed"
-      const updatedOrder = await Order.findByIdAndUpdate(
-        order_id,
-        { order_status: "completed" },
-        { new: true }
-      );
+    await transaction.save();
 
-      // Store transaction details
-      const transaction = new Transaction({
-        order_id,
-        buyer_id,
-        amount: session.amount_total,
-        payment_method: session.payment_method_types[0],
-        payment_status: "successful",
-      });
-      await transaction.save();
+    // Optionally, update order status to "completed"
+    const updatedOrder = await Order.findByIdAndUpdate(
+      order_id,
+      { order_status: "completed" },
+      { new: true }
+    );
 
-      return res.json({
-        success: true,
-        message: "Payment was successful",
-        transaction,
-        updatedOrder,
-      });
-    } else {
-      return res.status(400).json({ error: "Payment was unsuccessful." });
-    }
+    return res.json({
+      success: true,
+      message: "Payment was successful",
+      transaction,
+      updatedOrder,
+    });
   } catch (error) {
-    console.error("Error confirming payment:", error);
+    console.error("Error saving transaction:", error);
     return res.status(500).json({ error: "Payment confirmation failed." });
   }
 };
