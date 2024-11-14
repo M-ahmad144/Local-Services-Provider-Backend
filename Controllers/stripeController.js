@@ -2,6 +2,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Transaction = require("../Models/Transaction");
 const Order = require("../Models/Order");
 
+// Create checkout session
 exports.createCheckoutSession = async (req, res) => {
   const { amount, order_id, buyer_id } = req.body;
 
@@ -10,7 +11,7 @@ exports.createCheckoutSession = async (req, res) => {
   }
 
   try {
-    // Create a Stripe Checkout session
+    // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -38,7 +39,7 @@ exports.createCheckoutSession = async (req, res) => {
   }
 };
 
-// This function will now directly store the transaction when success page is hit
+// Confirm payment status and store transaction data (no payment verification)
 exports.confirmPaymentStatus = async (req, res) => {
   const { sessionId, order_id, buyer_id, amount } = req.body;
 
@@ -52,8 +53,8 @@ exports.confirmPaymentStatus = async (req, res) => {
       order_id,
       buyer_id,
       amount,
-      payment_method: "Credit Card", // This is assumed since it's a stripe checkout
-      payment_status: "successful", // You trust Stripe, so mark it as successful
+      payment_method: "Credit Card", // Assuming payment method
+      payment_status: "successful", // Marking as successful as we don't verify it here
     });
 
     // Save the transaction in the database
