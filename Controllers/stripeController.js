@@ -39,7 +39,26 @@ exports.createCheckoutSession = async (req, res) => {
   }
 };
 
-// Confirm payment status and store transaction data (no payment verification)
+// Endpoint to verify the session
+exports.verifyPaymentSession = async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+    // Retrieve session details from Stripe using the sessionId
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (session.payment_status === "paid") {
+      res.json({ paymentStatus: "success" });
+    } else {
+      res.json({ paymentStatus: "failed" });
+    }
+  } catch (error) {
+    console.error("Error verifying session:", error);
+    res.status(500).json({ error: "Failed to verify payment session" });
+  }
+};
+
+// Confirm payment status and store transaction data (with payment verification)
 exports.confirmPaymentStatus = async (req, res) => {
   const { sessionId, order_id, buyer_id, amount } = req.body;
 
@@ -48,33 +67,40 @@ exports.confirmPaymentStatus = async (req, res) => {
   }
 
   try {
-    // Directly store the transaction without verifying payment status
-    const transaction = new Transaction({
-      order_id,
-      buyer_id,
-      amount,
-      payment_method: "Credit Card", // Assuming payment method
-      payment_status: "successful", // Marking as successful as we don't verify it here
-    });
+    // Verify the payment status using the sessionId from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    // Save the transaction in the database
-    await transaction.save();
+    if (session.payment_status === "paid") {
+      // Store the transaction data as successful if payment is verified
+      const transaction = new Transaction({
+        order_id,
+        buyer_id,
+        amount,
+        payment_method: "Credit Card", // Assuming payment method
+        payment_status: "successful", // Mark as successful after verification
+      });
 
-    // Optionally, update the order status to "completed"
-    const updatedOrder = await Order.findByIdAndUpdate(
-      order_id,
-      { order_status: "completed" },
-      { new: true }
-    );
+      // Save the transaction in the database
+      await transaction.save();
 
-    return res.json({
-      success: true,
-      message: "Payment was successful",
-      transaction,
-      updatedOrder,
-    });
+      // Optionally, update the order status to "completed"
+      const updatedOrder = await Order.findByIdAndUpdate(
+        order_id,
+        { order_status: "completed" },
+        { new: true }
+      );
+
+      return res.json({
+        success: true,
+        message: "Payment was successful",
+        transaction,
+        updatedOrder,
+      });
+    } else {
+      res.status(400).json({ error: "Payment verification failed." });
+    }
   } catch (error) {
-    console.error("Error saving transaction:", error);
+    console.error("Error confirming payment status:", error);
     return res.status(500).json({ error: "Payment confirmation failed." });
   }
 };
