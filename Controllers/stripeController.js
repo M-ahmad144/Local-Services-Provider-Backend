@@ -21,7 +21,7 @@ exports.createCheckoutSession = async (req, res) => {
             product_data: {
               name: "Custom Payment",
             },
-            unit_amount: amount, // Amount in cents
+            unit_amount: amount,
           },
           quantity: 1,
         },
@@ -76,8 +76,8 @@ exports.confirmPaymentStatus = async (req, res) => {
         order_id,
         buyer_id,
         amount,
-        payment_method: "Credit Card", // Assuming payment method
-        payment_status: "successful", // Mark as successful after verification
+        payment_method: "Credit Card",
+        payment_status: "successful",
       });
 
       // Save the transaction in the database
