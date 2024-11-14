@@ -1,9 +1,9 @@
 const express = require("express");
 
 const router = express.Router();
-const { createCheckoutSession } = require("../Controllers/stripeController");
+const { confirmPaymentStatus } = require("../Controllers/stripeController");
 
-router.post("/create-checkout-session", createCheckoutSession);
-router.post("/confirm-payment", createCheckoutSession);
+// router.post("/create-checkout-session", createCheckoutSession);
+router.post("/confirm-payment", confirmPaymentStatus);
 
 module.exports = router;
