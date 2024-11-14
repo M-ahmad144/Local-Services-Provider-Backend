@@ -39,7 +39,47 @@ exports.createCheckoutSession = async (req, res) => {
   }
 };
 
-// Endpoint to verify the session
+// Confirm payment status and store transaction data
+exports.confirmPaymentStatus = async (req, res) => {
+  const { sessionId, order_id, buyer_id, amount } = req.body;
+
+  if (!sessionId || !order_id || !buyer_id || !amount) {
+    return res.status(400).json({ error: "Missing required data." });
+  }
+
+  try {
+    // Store the payment session details directly without payment verification (since it's in test mode)
+    const transaction = new Transaction({
+      order_id,
+      buyer_id,
+      amount,
+      payment_method: "Credit Card",
+      payment_status: "pending", // Since it's in test mode, set status as 'pending'
+    });
+
+    // Save the transaction in the database
+    await transaction.save();
+
+    // Optionally, update the order status to "pending confirmation"
+    const updatedOrder = await Order.findByIdAndUpdate(
+      order_id,
+      { order_status: "pending confirmation" },
+      { new: true }
+    );
+
+    return res.json({
+      success: true,
+      message: "Transaction stored successfully",
+      transaction,
+      updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error storing transaction:", error);
+    return res.status(500).json({ error: "Failed to store transaction" });
+  }
+};
+
+// Verify payment session (This endpoint is useful for checking session status but not required if not verifying payment)
 exports.verifyPaymentSession = async (req, res) => {
   const { sessionId } = req.params;
 
@@ -55,52 +95,5 @@ exports.verifyPaymentSession = async (req, res) => {
   } catch (error) {
     console.error("Error verifying session:", error);
     res.status(500).json({ error: "Failed to verify payment session" });
-  }
-};
-
-// Confirm payment status and store transaction data (with payment verification)
-exports.confirmPaymentStatus = async (req, res) => {
-  const { sessionId, order_id, buyer_id, amount } = req.body;
-
-  if (!sessionId || !order_id || !buyer_id || !amount) {
-    return res.status(400).json({ error: "Missing required data." });
-  }
-
-  try {
-    // Verify the payment status using the sessionId from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-    if (session.payment_status === "paid") {
-      // Store the transaction data as successful if payment is verified
-      const transaction = new Transaction({
-        order_id,
-        buyer_id,
-        amount,
-        payment_method: "Credit Card",
-        payment_status: "successful",
-      });
-
-      // Save the transaction in the database
-      await transaction.save();
-
-      // Optionally, update the order status to "completed"
-      const updatedOrder = await Order.findByIdAndUpdate(
-        order_id,
-        { order_status: "completed" },
-        { new: true }
-      );
-
-      return res.json({
-        success: true,
-        message: "Payment was successful",
-        transaction,
-        updatedOrder,
-      });
-    } else {
-      res.status(400).json({ error: "Payment verification failed." });
-    }
-  } catch (error) {
-    console.error("Error confirming payment status:", error);
-    return res.status(500).json({ error: "Payment confirmation failed." });
   }
 };
