@@ -10,6 +10,7 @@ exports.createCheckoutSession = async (req, res) => {
   }
 
   try {
+    // Create a Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -29,6 +30,7 @@ exports.createCheckoutSession = async (req, res) => {
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
     });
 
+    // Send the session ID back to the frontend
     res.json({ id: session.id });
   } catch (error) {
     console.error("Error creating Stripe session:", error);
@@ -44,15 +46,19 @@ exports.confirmPaymentStatus = async (req, res) => {
   }
 
   try {
+    // Retrieve session details from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
+    // Confirm payment
     if (session.payment_status === "paid") {
+      // Update order status to "completed"
       const updatedOrder = await Order.findByIdAndUpdate(
         order_id,
         { order_status: "completed" },
         { new: true }
       );
 
+      // Store transaction details
       const transaction = new Transaction({
         order_id,
         buyer_id,
