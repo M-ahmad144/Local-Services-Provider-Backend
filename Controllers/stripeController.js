@@ -42,7 +42,7 @@ exports.createCheckoutSession = async (req, res) => {
 // Confirm payment status and store transaction data
 exports.confirmPaymentStatus = async (req, res) => {
   const { sessionId, order_id, buyer_id, amount } = req.body;
-
+  console.log(sessionId, order_id, buyer_id, amount);
   if (!sessionId || !order_id || !buyer_id || !amount) {
     return res.status(400).json({ error: "Missing required data." });
   }
