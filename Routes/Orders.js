@@ -28,6 +28,8 @@ router.get('/disputed' , GetDisputedOrders)
 
 
 router.patch("/reject", orderRejectUpdate);
+router.patch("/accept", orderAcceptUpdate);
+
 
 router.patch("/complete_by_freelancer", markAsCompletedByFreelancer);
 
