@@ -23,5 +23,7 @@ const serviceSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
+serviceSchema.index({ title: "text", description: "text" });
+
 const Service = mongoose.model("Service", serviceSchema);
 module.exports = Service

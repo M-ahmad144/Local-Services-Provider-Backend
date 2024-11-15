@@ -5,12 +5,17 @@ const {
   getServiceByID, 
   getAllServices, 
   getServicesByUserID, 
-  deleteService 
+  deleteService,
+  search 
 } = require('../Controllers/ServiceProvider');
 
 const router = express.Router();
 
 router.param('service_id', getServiceByID)
+
+// Search service
+router.get('/search', search);
+
 // Create a new service
 router.post('/add-service', createService);
 

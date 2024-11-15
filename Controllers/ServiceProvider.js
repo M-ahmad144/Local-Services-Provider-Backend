@@ -135,7 +135,22 @@ const getServiceByID = async (req, res, next) => {
   }
 };
 
+const search = async (req, res) => {
+  const query = req.query.query; // Extract the query from req.query
+  try {
+    // Perform a regex search to allow partial matching (fuzzy search)
+    const results = await Service.find({
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+      ]
+    }).populate('user_id', 'profile_image name location');
 
+    res.json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+}
 
   
 module.exports = {
@@ -145,4 +160,5 @@ module.exports = {
   getServiceByID,
   getServicesByUserID,
   deleteService,
+  search
 };
