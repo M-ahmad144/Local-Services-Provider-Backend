@@ -8,7 +8,8 @@ const {
     GetInProgressOrders,
     orderRejectUpdate, 
     markAsCompletedByFreelancer,
-    confirmOrderCompletion
+    confirmOrderCompletion,
+    GetDisputedOrders
 
 } = require('../Controllers/OrdersController');
 
@@ -21,6 +22,8 @@ router.post('/create' , CreateOrder)
 
 router.get('/pending' , GetPendingOrders)
 router.get('/in_progress' , GetInProgressOrders)
+router.get('/disputed' , GetDisputedOrders)
+
 
 
 router.patch('/counter_price_update' , counterPriceUpdate)

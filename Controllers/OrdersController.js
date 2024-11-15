@@ -68,9 +68,36 @@ const GetPendingOrders = async (req, res, next) => {
     }
 };
 
+
+const GetDisputedOrders = async (req, res, next) => {
+    const { user_type, user_id } = req.query;
+    console.log(user_type, user_id);
+    
+    try {
+        let orders;
+
+        if (user_type === 'buyer') {
+            
+            orders = await Orders.find({ buyer_id: user_id, order_status: 'in dispute' })
+                                 .populate('service_provider_id', 'name');
+        } else if (user_type === 'service provider') {
+            
+            orders = await Orders.find({ service_provider_id: user_id, order_status: 'in dispute' })
+                                 .populate('buyer_id', 'name');
+        } else {
+            return res.status(400).json({ error: 'Invalid user_type provided' });
+        }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching pending orders:', error);
+        res.status(500).json({ error: 'Error fetching pending orders' });
+    }
+};
+
 const GetInProgressOrders = async (req, res, next) => {
     const { user_type, user_id } = req.query; // Extract from query parameters
-    console.log(user_type, user_id);
+    
     
     try {
         let orders;
@@ -258,6 +285,7 @@ const markAsCompletedByFreelancer = async (req, res) => {
 module.exports = {
     CreateOrder,
     GetPendingOrders,
+    GetDisputedOrders,
     counterPriceUpdate,
     counterTimeUpdate,
     orderAcceptUpdate,
