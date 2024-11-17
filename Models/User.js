@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     user_type: {
       type: String,
       enum: ["service provider", "buyer"],
-      required: true,
+      
     },
     profile_description: { type: String },
     verify: { type: Boolean, default: false },
