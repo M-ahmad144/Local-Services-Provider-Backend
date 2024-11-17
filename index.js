@@ -12,6 +12,8 @@ const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
 const checkoutRoutes = require("./Routes/stripeCheckout");
+const analyticsRoutes = require("./Routes/AnalyticsRoutes");
+
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
@@ -47,6 +49,8 @@ app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 app.use("/payments", checkoutRoutes);
+app.use("/analytics", analyticsRoutes);
+
 
 // Global error handler
 app.use(globalErrorHandler);
