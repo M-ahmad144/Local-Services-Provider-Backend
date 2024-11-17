@@ -293,7 +293,9 @@ const sendOTP = async ({ _id, email }) => {
   }
 };
 
-const resendOTP = async ({ _id, email }) => {
+const resendOTP = async (req,res) => {
+  const { _id, email } = req.body;
+  console.log("email", email);
   try {
     const otp = `${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -331,6 +333,7 @@ const resendOTP = async ({ _id, email }) => {
     await Transport.sendMail(mailOptions);
 
     console.log("OTP resent successfully.");
+    res.status(200).json({ success: true, message: "OTP resent successfully" });
   } catch (error) {
     console.error("Error resending OTP:", error);
     throw new Error("Server error");
