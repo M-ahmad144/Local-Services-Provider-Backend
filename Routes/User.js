@@ -6,6 +6,7 @@ const {
   roleSelection,
   logout,
   updatePassword,
+  resendOTP,
 } = require("../Controllers/User");
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/logout", logout);
 router.post("/role-selection", roleSelection);
 router.post("/OTP-verification", verifyEmail);
 router.post("/change-password",updatePassword);
+router.post("/resend-OTP",resendOTP);
 
 module.exports = router;
