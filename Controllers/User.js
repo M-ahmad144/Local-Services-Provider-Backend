@@ -84,7 +84,7 @@ const login = asyncHandler(async (req, res) => {
 
   if (user.is_google) {
     return res.status(400).json({
-      message: "Please login using Google",
+      message: "you have signed up with google please login with google",
     });
   }
 
