@@ -47,6 +47,7 @@ router.post('/', async (req, res) => {
         password: 'google', // Consider using a hashed password for security
         user_type: null, // Set user type
         verify: true, // Set user as verified
+        is_google: true, // Set user as a Google user
       });
       await user.save(); // Save the new user to the database
       console.log('User created:', user);

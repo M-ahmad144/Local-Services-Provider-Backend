@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "default-profile.png",
     },
+    is_google: { type: Boolean, default: false },
     location: { type: String },
     rating: { type: Number, default: 0 },
     created_at: { type: Date, default: Date.now },
