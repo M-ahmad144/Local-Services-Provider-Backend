@@ -82,6 +82,12 @@ const login = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
+  if (user.is_google) {
+    return res.status(400).json({
+      message: "Please login using Google",
+    });
+  }
+
   // Check if user is verified
   if (!user.verify) {
     return res
