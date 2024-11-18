@@ -142,6 +142,7 @@ const search = async (req, res) => {
     const results = await Service.find({
       $or: [
         { title: { $regex: query, $options: "i" } },
+        { service_location: { $regex: query, $options: "i" } },
       ]
     }).populate('user_id', 'profile_image name location');
 

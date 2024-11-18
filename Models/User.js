@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     user_type: {
       type: String,
       enum: ["service provider", "buyer"],
-      required: true,
+      
     },
     profile_description: { type: String },
     verify: { type: Boolean, default: false },
@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "default-profile.png",
     },
+    is_google: { type: Boolean, default: false },
     location: { type: String },
     rating: { type: Number, default: 0 },
     created_at: { type: Date, default: Date.now },
