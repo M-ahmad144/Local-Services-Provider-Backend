@@ -2,7 +2,8 @@ const express = require("express");
 
 const {
   GetAllOrders,
-  SuccessfulTransactions
+  SuccessfulTransactions,
+  GetOrdersCountByService
 } = require("../Controllers/Analytics");
 
 const router = express.Router();
@@ -10,6 +11,8 @@ const router = express.Router();
 
 router.get("/orders", GetAllOrders);
 router.get("/transactions", SuccessfulTransactions);
+router.get("/orders-count", GetOrdersCountByService);
+
 
 
 
