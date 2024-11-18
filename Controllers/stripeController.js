@@ -42,28 +42,40 @@ exports.createCheckoutSession = async (req, res) => {
 // Confirm payment status and store transaction data
 exports.confirmPaymentStatus = async (req, res) => {
   const { sessionId, order_id, buyer_id, amount } = req.body;
-  console.log(sessionId, order_id, buyer_id, amount);
+
   if (!sessionId || !order_id || !buyer_id || !amount) {
     return res.status(400).json({ error: "Missing required data." });
   }
 
   try {
-    // Store the payment session details directly without payment verification (since it's in test mode)
+    // Retrieve session details from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (!session) {
+      return res.status(404).json({ error: "Payment session not found." });
+    }
+
+    // Check payment status
+    const paymentStatus =
+      session.payment_status === "paid" ? "successful" : "failed";
+
+    // Save the transaction in the database
     const transaction = new Transaction({
       order_id,
       buyer_id,
       amount,
       payment_method: "Credit Card",
-      payment_status: "success",
+      payment_status: paymentStatus,
     });
 
-    // Save the transaction in the database
     await transaction.save();
 
-    // Optionally, update the order status to "pending confirmation"
+    // Update the order status
+    const orderStatus =
+      paymentStatus === "successful" ? "pending confirmation" : "in dispute";
     const updatedOrder = await Order.findByIdAndUpdate(
       order_id,
-      { order_status: "completed" },
+      { order_status: orderStatus },
       { new: true }
     );
 
