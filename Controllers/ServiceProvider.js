@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Service = require('../Models/Service')
+const Review = require('../Models/Review')
 
 const getAllServices = async (req, res) => {
   try {
@@ -153,6 +154,34 @@ const search = async (req, res) => {
   }
 }
 
+const getAvgRatings = async (req, res) => {
+  const { user_id } = req.params;
+  try {
+    const result = await Review.aggregate([
+      {
+        $match: {
+          service_id: new mongoose.Types.ObjectId(user_id) // Change `service_id` as per your filtering logic
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: "$rating" }
+        }
+      }
+    ]);
+
+    // Default to 0 if no reviews are found
+    const avgRating = result.length > 0 ? result[0].avgRating : 0;
+
+    return res.status(200).json({ avgRating });
+  } catch (err) {
+    console.error("Error fetching average ratings:", err);
+    return res.status(500).json({ error: "Error fetching average ratings" });
+  }
+};
+
+
   
 module.exports = {
   createService,
@@ -161,5 +190,6 @@ module.exports = {
   getServiceByID,
   getServicesByUserID,
   deleteService,
-  search
+  search,
+  getAvgRatings
 };
