@@ -55,9 +55,18 @@ exports.confirmPaymentStatus = async (req, res) => {
       return res.status(404).json({ error: "Payment session not found." });
     }
 
-    // Check payment status
+    // Retrieve payment status from session
     const paymentStatus =
       session.payment_status === "paid" ? "successful" : "failed";
+
+    // Map paymentStatus to order_status
+    const statusMapping = {
+      successful: "completed",
+      pending: "pending confirmation",
+      failed: "in dispute",
+    };
+
+    const orderStatus = statusMapping[paymentStatus] || "in dispute";
 
     // Save the transaction in the database
     const transaction = new Transaction({
@@ -71,23 +80,27 @@ exports.confirmPaymentStatus = async (req, res) => {
     await transaction.save();
 
     // Update the order status
-    const orderStatus =
-      paymentStatus === "successful" ? "pending confirmation" : "in dispute";
     const updatedOrder = await Order.findByIdAndUpdate(
       order_id,
       { order_status: orderStatus },
-      { new: true }
+      { new: true } // Return the updated document
     );
+
+    if (!updatedOrder) {
+      return res
+        .status(404)
+        .json({ error: "Order not found or update failed." });
+    }
 
     return res.json({
       success: true,
-      message: "Transaction stored successfully",
+      message: "Transaction stored and order updated successfully.",
       transaction,
       updatedOrder,
     });
   } catch (error) {
-    console.error("Error storing transaction:", error);
-    return res.status(500).json({ error: "Failed to store transaction" });
+    console.error("Error confirming payment status:", error);
+    return res.status(500).json({ error: "Failed to confirm payment status." });
   }
 };
 
