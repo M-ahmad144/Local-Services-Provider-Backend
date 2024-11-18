@@ -54,7 +54,7 @@ exports.confirmPaymentStatus = async (req, res) => {
       buyer_id,
       amount,
       payment_method: "Credit Card",
-      payment_status: "pending", // Since it's in test mode, set status as 'pending'
+      payment_status: "success",
     });
 
     // Save the transaction in the database
@@ -63,7 +63,7 @@ exports.confirmPaymentStatus = async (req, res) => {
     // Optionally, update the order status to "pending confirmation"
     const updatedOrder = await Order.findByIdAndUpdate(
       order_id,
-      { order_status: "pending confirmation" },
+      { order_status: "completed" },
       { new: true }
     );
 
