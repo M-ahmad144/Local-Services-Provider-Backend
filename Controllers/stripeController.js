@@ -42,40 +42,65 @@ exports.createCheckoutSession = async (req, res) => {
 // Confirm payment status and store transaction data
 exports.confirmPaymentStatus = async (req, res) => {
   const { sessionId, order_id, buyer_id, amount } = req.body;
-  console.log(sessionId, order_id, buyer_id, amount);
+
   if (!sessionId || !order_id || !buyer_id || !amount) {
     return res.status(400).json({ error: "Missing required data." });
   }
 
   try {
-    // Store the payment session details directly without payment verification (since it's in test mode)
+    // Retrieve session details from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (!session) {
+      return res.status(404).json({ error: "Payment session not found." });
+    }
+
+    // Retrieve payment status from session
+    const paymentStatus =
+      session.payment_status === "paid" ? "successful" : "failed";
+
+    // Map paymentStatus to order_status
+    const statusMapping = {
+      successful: "completed",
+      pending: "pending confirmation",
+      failed: "in dispute",
+    };
+
+    const orderStatus = statusMapping[paymentStatus] || "in dispute";
+
+    // Save the transaction in the database
     const transaction = new Transaction({
       order_id,
       buyer_id,
       amount,
       payment_method: "Credit Card",
-      payment_status: "pending", // Since it's in test mode, set status as 'pending'
+      payment_status: paymentStatus,
     });
 
-    // Save the transaction in the database
     await transaction.save();
 
-    // Optionally, update the order status to "pending confirmation"
+    // Update the order status
     const updatedOrder = await Order.findByIdAndUpdate(
       order_id,
-      { order_status: "pending confirmation" },
-      { new: true }
+      { order_status: orderStatus },
+      { new: true } // Return the updated document
     );
+
+    if (!updatedOrder) {
+      return res
+        .status(404)
+        .json({ error: "Order not found or update failed." });
+    }
 
     return res.json({
       success: true,
-      message: "Transaction stored successfully",
+      message: "Transaction stored and order updated successfully.",
       transaction,
       updatedOrder,
     });
   } catch (error) {
-    console.error("Error storing transaction:", error);
-    return res.status(500).json({ error: "Failed to store transaction" });
+    console.error("Error confirming payment status:", error);
+    return res.status(500).json({ error: "Failed to confirm payment status." });
   }
 };
 
