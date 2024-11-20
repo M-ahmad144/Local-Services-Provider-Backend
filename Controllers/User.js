@@ -375,6 +375,22 @@ console.log("Password updated successfully");
   res.status(200).json({ success: true, message: "Password updated successfully" });
 });
 
+const getUsers = async (req, res) => {
+  try {
+    // Fetch users with selected fields only
+    const users = await User.find({}, "name email user_type verify profile_description profile_image location skills created_at");
+
+    // Send response
+    res.status(200).json({users});
+  } catch (error) {
+    console.error("Error fetching users for admin dashboard:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users. Please try again later.",
+    });
+  }
+}
+
 
 module.exports = {
   login,
@@ -384,4 +400,5 @@ module.exports = {
   roleSelection,
   updatePassword,
   resendOTP,
+  getUsers
 };

@@ -7,10 +7,12 @@ const {
   logout,
   updatePassword,
   resendOTP,
+  getUsers
 } = require("../Controllers/User");
 
 const router = express.Router();
 
+router.get("/get-all-users", getUsers)
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
