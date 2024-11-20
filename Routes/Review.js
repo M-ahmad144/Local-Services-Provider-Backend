@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/reviewdata", reviewdata);
 
 
-
+module.exports = router;
 
 
 
