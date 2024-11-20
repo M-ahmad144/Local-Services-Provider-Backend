@@ -13,6 +13,7 @@ const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
 const checkoutRoutes = require("./Routes/stripeCheckout");
 const analyticsRoutes = require("./Routes/AnalyticsRoutes");
+const reviewRoutes=require("./Routes/Review");
 
 
 // Global error handler middleware
@@ -50,6 +51,7 @@ app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 app.use("/payments", checkoutRoutes);
 app.use("/analytics", analyticsRoutes);
+app.use("/review",reviewRoutes);
 
 
 // Global error handler

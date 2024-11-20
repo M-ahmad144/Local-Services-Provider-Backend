@@ -1,8 +1,11 @@
 
-// const express = require("express");
-// //const { createReview, getReviewByID, getReviewsByServiceID } = require("../Controllers/Review");
+const express = require("express");
+const { reviewdata } = require("../Controllers/Review");
 
-// const router = express.Router();
+
+const router = express.Router();
+
+router.post("/reviewdata", reviewdata);
 
 
 
