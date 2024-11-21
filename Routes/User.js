@@ -6,8 +6,11 @@ const {
   roleSelection,
   logout,
   updatePassword,
+<<<<<<< Updated upstream
   resendOTP,
   getUsers
+=======
+>>>>>>> Stashed changes
 } = require("../Controllers/User");
 
 const router = express.Router();
@@ -19,6 +22,9 @@ router.post("/logout", logout);
 router.post("/role-selection", roleSelection);
 router.post("/OTP-verification", verifyEmail);
 router.post("/change-password",updatePassword);
+<<<<<<< Updated upstream
 router.post("/resend-OTP",resendOTP);
+=======
+>>>>>>> Stashed changes
 
 module.exports = router;
