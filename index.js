@@ -11,14 +11,12 @@ const OrderRoutes = require("./Routes/Orders");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
-<<<<<<< Updated upstream
+
 const checkoutRoutes = require("./Routes/stripeCheckout");
 const analyticsRoutes = require("./Routes/AnalyticsRoutes");
 const reviewRoutes=require("./Routes/Review");
 
-=======
-// const reviews = require("./Routes/Review");
->>>>>>> Stashed changes
+
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
@@ -29,7 +27,7 @@ const app = express();
 
 // CORS options
 const corsOptions = {
-<<<<<<< Updated upstream
+
   origin: [
     "https://myneighbourly.vercel.app",
     "http://localhost:5173",
@@ -38,14 +36,14 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Enable credentials
-=======
+
 
   origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
 
   credentials: true, // Enable credentials (if needed)
->>>>>>> Stashed changes
+
 };
 
 app.use(cors(corsOptions));
@@ -62,13 +60,12 @@ app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
-<<<<<<< Updated upstream
+
 app.use("/payments", checkoutRoutes);
 app.use("/analytics", analyticsRoutes);
 app.use("/review",reviewRoutes);
-=======
-// app.use("/reviews", reviews);
->>>>>>> Stashed changes
+
+
 
 
 // Global error handler

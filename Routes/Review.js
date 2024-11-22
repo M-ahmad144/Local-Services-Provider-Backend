@@ -1,16 +1,12 @@
 
-<<<<<<< Updated upstream
+
 const express = require("express");
-const { reviewdata } = require("../Controllers/Review");
+const { reviewdata ,addreview} = require("../Controllers/Review");
 
-=======
-// const express = require("express");
-// //const { createReview, getReviewByID, getReviewsByServiceID } = require("../Controllers/Review");
->>>>>>> Stashed changes
-
-// const router = express.Router();
+const router=express.Router();
 
 router.post("/reviewdata", reviewdata);
+router.post("/addreview", addreview);
 
 
 module.exports = router;

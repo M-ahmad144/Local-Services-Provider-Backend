@@ -21,59 +21,7 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-<<<<<<< Updated upstream
-=======
-// Sign up function
-// const signup = asyncHandler(async (req, res) => {
-//   const { fullName, email, password } = req.body;
-//   console.log(fullName, email);
 
-//   // Check if user exists
-//   let user = await User.findOne({ email });
-//   if (user) {
-//     return res
-//       .status(400)
-//       .json({ message: "User already exists", success: false });
-//   }
-
-//   // Encrypt password
-//   const salt = await bcrypt.genSalt(10);
-//   const hashedPassword = await bcrypt.hash(password, salt);
-
-//   // Create user
-//   user = new User({
-//     name: fullName,
-//     email,
-//     password: hashedPassword,
-//     user_type: "buyer",
-//   });
-
-//   await user.save();
-
-//   // Generate token
-//   const token = generateToken(user._id);
-//   console.log(token);
-//   // Set token in cookie
-//   await sendOTP({ _id: user._id, email: user.email }, res);
-//   res.cookie("token", token, {
-//     httpOnly: true,
-//     secure: process.env.NODE_ENV === "production", // Set to true in production
-//     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-//   });
-
-//   res.status(201).json({
-//     success: true,
-//     message: "User registered successfully",
-//     data: {
-//       _id: user._id,
-//       name: user.name,
-//       email: user.email,
-//       type: "buyer",
-//     },
-//   });
-// });
-
->>>>>>> Stashed changes
 // Login function
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -306,11 +254,9 @@ console.log("OTP sent successfully");
       _id: user._id,
       name: user.name,
       email: user.email,
-<<<<<<< Updated upstream
+
       user_type: "buyer",
-=======
-      type: "buyer",
->>>>>>> Stashed changes
+
     },
   });
 });
@@ -350,7 +296,7 @@ const sendOTP = async ({ _id, email }) => {
   }
 };
 
-<<<<<<< Updated upstream
+
 const resendOTP = async (req,res) => {
   const { _id, email } = req.body;
   console.log("email", email);
@@ -450,17 +396,16 @@ const getUsers = async (req, res) => {
 }
 
 
-=======
-
-// change password
-const updatePassword = asyncHandler(async (req, res) => {
-
-path=4;
 
 
-});
+// // change password
+// const updatePassword = asyncHandler(async (req, res) => {
 
->>>>>>> Stashed changes
+// path=4;
+
+
+// });
+
 module.exports = {
   login,
   signup,
@@ -468,9 +413,8 @@ module.exports = {
   verifyEmail,
   roleSelection,
   updatePassword,
-<<<<<<< Updated upstream
+
   resendOTP,
   getUsers
-=======
->>>>>>> Stashed changes
+
 };
