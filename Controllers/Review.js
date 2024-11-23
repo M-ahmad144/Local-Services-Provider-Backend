@@ -27,8 +27,8 @@ const reviewdata = async (req, res) => {
 
 const addreview = async (req, res) =>{
     try {
-        const { buyer_id, order_id,  rating, review } = req.body;
-        console.log(buyer_id, order_id, rating, review);
+        const { buyer_id, order_id,  rating, comment } = req.body;
+        console.log(buyer_id, order_id, rating, comment);
 
         const order = await Order.findById(order_id);
         const service_id = order.service_id;
@@ -38,7 +38,7 @@ const addreview = async (req, res) =>{
             buyer_id,
             service_id,
             rating,
-            review_text: review,
+            review_text: comment,
 
         });
 
@@ -49,6 +49,7 @@ const addreview = async (req, res) =>{
 
 
     } catch (error) {
+        res.status(500).json({ error: 'Internal server error.' });
     }
 };
 
