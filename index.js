@@ -23,11 +23,7 @@ dotenv.config();
 const app = express();
 // CORS options
 const corsOptions = {
-  origin: [
-    "https://myneighbourly.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:5173",
-  ],
+  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Enable credentials
@@ -52,7 +48,6 @@ app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
-
 app.use("/payments", checkoutRoutes);
 app.use("/analytics", analyticsRoutes);
 
