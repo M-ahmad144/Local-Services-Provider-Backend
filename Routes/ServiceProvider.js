@@ -6,7 +6,8 @@ const {
   getAllServices, 
   getServicesByUserID, 
   deleteService,
-  search 
+  search,
+  getAvgRatings 
 } = require('../Controllers/ServiceProvider');
 
 const router = express.Router();
@@ -33,5 +34,7 @@ router.get('/get-service/:service_id', getServiceByID);
 
 // Delete a service by service_id (use DELETE method)
 router.delete('/delete-service/:service_id', deleteService);
+
+router.get('/ratings/:user_id', getAvgRatings);
 
 module.exports = router;

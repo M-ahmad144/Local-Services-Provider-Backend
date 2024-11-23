@@ -11,8 +11,10 @@ const OrderRoutes = require("./Routes/Orders");
 const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
+
 const checkoutRoutes = require("./Routes/stripeCheckout");
 const analyticsRoutes = require("./Routes/AnalyticsRoutes");
+
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 
@@ -21,10 +23,20 @@ dotenv.config();
 const app = express();
 // CORS options
 const corsOptions = {
-  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
+  origin: [
+    "https://myneighbourly.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:5173",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Enable credentials
+
+  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+
+  credentials: true, // Enable credentials (if needed)
 };
 
 app.use(cors(corsOptions));
@@ -40,8 +52,10 @@ app.use("/auth/google", signingoogle);
 app.use("/api", userRouter);
 app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
+
 app.use("/payments", checkoutRoutes);
 app.use("/analytics", analyticsRoutes);
+
 // Global error handler
 app.use(globalErrorHandler);
 

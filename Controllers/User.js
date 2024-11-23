@@ -21,6 +21,7 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
+
 // Login function
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -253,7 +254,9 @@ console.log("OTP sent successfully");
       _id: user._id,
       name: user.name,
       email: user.email,
+
       user_type: "buyer",
+
     },
   });
 });
@@ -292,6 +295,7 @@ const sendOTP = async ({ _id, email }) => {
     throw new Error("Server error");
   }
 };
+
 
 const resendOTP = async (req,res) => {
   const { _id, email } = req.body;
@@ -375,6 +379,32 @@ console.log("Password updated successfully");
   res.status(200).json({ success: true, message: "Password updated successfully" });
 });
 
+const getUsers = async (req, res) => {
+  try {
+    // Fetch users with selected fields only
+    const users = await User.find({}, "name email user_type verify profile_description profile_image location skills created_at");
+
+    // Send response
+    res.status(200).json({users});
+  } catch (error) {
+    console.error("Error fetching users for admin dashboard:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users. Please try again later.",
+    });
+  }
+}
+
+
+
+
+// // change password
+// const updatePassword = asyncHandler(async (req, res) => {
+
+// path=4;
+
+
+// });
 
 module.exports = {
   login,
@@ -383,5 +413,8 @@ module.exports = {
   verifyEmail,
   roleSelection,
   updatePassword,
+
   resendOTP,
+  getUsers
+
 };
