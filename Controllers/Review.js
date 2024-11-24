@@ -23,7 +23,7 @@ const reviewdata = async (req, res) => {
         const all_reviews = await Review.find({ service_id: serviceid })
             .populate('buyer_id', 'name'); // Populate only the 'name' field of the buyer
 
-       
+
 
         // Transform reviews to replace buyer_id with buyer_name
         const reviews_with_buyer_name = all_reviews.map(review => {
@@ -46,9 +46,30 @@ const reviewdata = async (req, res) => {
     }
 };
 
-const addreview = async (req, res) =>{
+const getReviewsByServices = async (req, res, next) => {
     try {
-        const { buyer_id, order_id,  rating, comment } = req.body;
+        const  {serviceId}  = req.query;
+
+        console.log(serviceId)
+
+        if (!serviceId) {
+            return res.status(400).json({ message: "Service ID is required" });
+        }
+
+        // Find reviews by serviceId and populate buyer name from the User model
+        const reviews = await Review.find({ service_id:serviceId }).populate('buyer_id', 'name');
+
+        res.status(200).json(reviews);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+};
+
+
+
+const addreview = async (req, res) => {
+    try {
+        const { buyer_id, order_id, rating, comment } = req.body;
         console.log(buyer_id, order_id, rating, comment);
 
         const order = await Order.findById(order_id);
@@ -74,4 +95,4 @@ const addreview = async (req, res) =>{
     }
 };
 
-module.exports = { reviewdata ,addreview};
+module.exports = { reviewdata, addreview , getReviewsByServices };
