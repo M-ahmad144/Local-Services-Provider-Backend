@@ -8,22 +8,37 @@ const reviewdata = async (req, res) => {
     try {
         const { buyer_id, order_id } = req.body;
 
-        const order=await Order.findById(order_id);
-        const service_provider_id=order.service_provider_id;
+        // Fetch the order using order_id
+        const order = await Order.findById(order_id);
+        const service_provider_id = order.service_provider_id;
 
-        const service_provider=await User.findById(service_provider_id);
-        const service_provider_name=service_provider.name;
-        const description=service_provider.description;
-        
-        const serviceid=order.service_id;
-        const all_reviews = await Review.find({ service_id: serviceid });
+        // Fetch the service provider details
+        const service_provider = await User.findById(service_provider_id);
+        const service_provider_name = service_provider.name;
+        const description = service_provider.description;
 
-        if (!all_reviews) {
-            return res.status(404).json({ error: 'No reviews found.' });
-        }
+        const serviceid = order.service_id;
 
-        res.status(200).json({ reviews: all_reviews, service_provider_name ,description});
+        // Fetch all reviews for the service and populate the buyer_id field to get buyer details
+        const all_reviews = await Review.find({ service_id: serviceid })
+            .populate('buyer_id', 'name'); // Populate only the 'name' field of the buyer
 
+       
+
+        // Transform reviews to replace buyer_id with buyer_name
+        const reviews_with_buyer_name = all_reviews.map(review => {
+            const { buyer_id, ...otherFields } = review.toObject(); // Extract buyer_id and other fields
+            return {
+                ...otherFields,
+                buyer_name: buyer_id.name, // Replace buyer_id with buyer_name
+            };
+        });
+
+        res.status(200).json({
+            reviews: reviews_with_buyer_name,
+            service_provider_name,
+            description,
+        });
 
     } catch (error) {
         console.error('Error fetching reviews:', error);
