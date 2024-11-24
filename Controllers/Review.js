@@ -15,7 +15,7 @@ const reviewdata = async (req, res) => {
         // Fetch the service provider details
         const service_provider = await User.findById(service_provider_id);
         const service_provider_name = service_provider.name;
-        const description = service_provider.description;
+        const description = service_provider.profile_description;
 
         const serviceid = order.service_id;
 
