@@ -1,13 +1,19 @@
 const mongoose = require('mongoose');
 const Review = require('../Models/Review');
 const Order = require('../Models/Order');
+const User = require('../Models/User');
 
 // GET /reviewdata
 const reviewdata = async (req, res) => {
     try {
-        const { buyer_id, order_id } = req.query;
+        const { buyer_id, order_id } = req.body;
 
         const order=await Order.findById(order_id);
+        const service_provider_id=order.service_provider_id;
+
+        const service_provider=await User.findById(service_provider_id);
+        const service_provider_name=service_provider.name;
+        const description=service_provider.description;
         
         const serviceid=order.service_id;
         const all_reviews = await Review.find({ service_id: serviceid });
@@ -16,7 +22,7 @@ const reviewdata = async (req, res) => {
             return res.status(404).json({ error: 'No reviews found.' });
         }
 
-        res.status(200).json({ reviews: all_reviews });
+        res.status(200).json({ reviews: all_reviews, service_provider_name ,description});
 
 
     } catch (error) {

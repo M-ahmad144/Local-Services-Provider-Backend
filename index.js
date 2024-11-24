@@ -14,9 +14,11 @@ const messageRoutes = require("./Routes/messagesRoutes");
 
 const checkoutRoutes = require("./Routes/stripeCheckout");
 const analyticsRoutes = require("./Routes/AnalyticsRoutes");
+const Reviews = require("./Routes/Review");
 
 // Global error handler middleware
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
+// const Review = require("./Models/Review");
 
 dotenv.config();
 
@@ -50,6 +52,7 @@ app.use("/chat", chatRoutes);
 app.use("/messages", messageRoutes);
 app.use("/payments", checkoutRoutes);
 app.use("/analytics", analyticsRoutes);
+app.use("/review", Reviews);
 
 // Global error handler
 app.use(globalErrorHandler);
