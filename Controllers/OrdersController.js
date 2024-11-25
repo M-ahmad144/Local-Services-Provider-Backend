@@ -312,7 +312,6 @@ const getCompletedOrders = async (req, res) => {
   }
 };
 
-module.exports = { getCompletedOrders };
 
 
 
