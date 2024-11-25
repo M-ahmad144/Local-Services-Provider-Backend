@@ -159,20 +159,31 @@ const getAvgRatings = async (req, res) => {
   try {
     const result = await Review.aggregate([
       {
-        $match: {
-          service_id: new mongoose.Types.ObjectId(user_id) // Change `service_id` as per your filtering logic
+        // Match reviews for services where the user is the service provider
+        $lookup: {
+          from: "services", // Collection name for services
+          localField: "service_id",
+          foreignField: "_id",
+          as: "serviceDetails"
         }
       },
       {
+        // Filter reviews whose service belongs to the specified user
+        $match: {
+          "serviceDetails.user_id": new mongoose.Types.ObjectId(user_id)
+        }
+      },
+      {
+        // Group reviews to calculate the average rating
         $group: {
           _id: null,
           avgRating: { $avg: "$rating" }
         }
       }
     ]);
-
+    console.log(result)
     // Default to 0 if no reviews are found
-    const avgRating = result.length > 0 ? result[0].avgRating : 0;
+    const avgRating = result.length > 0 ? result[0].avgRating.toFixed(2) : 0;
 
     return res.status(200).json({ avgRating });
   } catch (err) {
