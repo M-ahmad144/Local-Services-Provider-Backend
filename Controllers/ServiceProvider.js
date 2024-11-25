@@ -4,14 +4,34 @@ const Review = require('../Models/Review')
 
 const getAllServices = async (req, res) => {
   try {
+    // Fetch services with user details
     const services = await Service.find().populate('user_id', 'profile_image name location');
 
-    res.status(200).json(services);
+    // Map over services to calculate average rating and review count
+    const servicesWithReviews = await Promise.all(
+      services.map(async (service) => {
+        const reviews = await Review.find({ service_id: service._id });
+
+        const totalReviews = reviews.length;
+        const averageRating = totalReviews
+          ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+          : 0;
+
+        return {
+          ...service.toObject(),
+          averageRating: averageRating.toFixed(1), // To one decimal place
+          totalReviews,
+        };
+      })
+    );
+
+    res.status(200).json(servicesWithReviews);
   } catch (error) {
     console.error("Error fetching services:", error);
     res.status(500).json({ error: "Error fetching services" });
   }
 };
+
 
 const createService = async (req, res) => {
   const data = req.body.formData; // Assuming the data is sent in the request body
