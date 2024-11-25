@@ -19,7 +19,7 @@ const getAllServices = async (req, res) => {
 
         return {
           ...service.toObject(),
-          averageRating: averageRating.toFixed(1), // To one decimal place
+          averageRating: averageRating.toFixed(2), // To one decimal place
           totalReviews,
         };
       })
@@ -176,11 +176,23 @@ const search = async (req, res) => {
 
 const getAvgRatings = async (req, res) => {
   const { user_id } = req.params;
+
   try {
     const result = await Review.aggregate([
       {
+        $lookup: {
+          from: "services", // Name of your services collection
+          localField: "service_id",
+          foreignField: "_id",
+          as: "service"
+        }
+      },
+      {
+        $unwind: "$service"
+      },
+      {
         $match: {
-          service_id: new mongoose.Types.ObjectId(user_id) // Change `service_id` as per your filtering logic
+          "service.user_id": new mongoose.Types.ObjectId(user_id)
         }
       },
       {
@@ -191,15 +203,15 @@ const getAvgRatings = async (req, res) => {
       }
     ]);
 
-    // Default to 0 if no reviews are found
-    const avgRating = result.length > 0 ? result[0].avgRating : 0;
+    const avgRating = (result.length > 0 ? result[0].avgRating : 0).toFixed(2);
 
-    return res.status(200).json({ avgRating });
+    res.status(200).json({ avgRating });
   } catch (err) {
-    console.error("Error fetching average ratings:", err);
-    return res.status(500).json({ error: "Error fetching average ratings" });
+    console.error("Error fetching user's average rating:", err);
+    res.status(500).json({ error: "Error fetching user's average rating" });
   }
 };
+
 
 
   
