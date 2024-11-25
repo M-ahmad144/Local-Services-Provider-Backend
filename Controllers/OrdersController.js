@@ -300,7 +300,7 @@ const getCompletedOrders = async (req, res) => {
           service_provider_name: order.service_provider_id?.name, // Service provider's name from populated data
           work_description: order.description,
           rating: review ? review.rating : null,
-          review_description: review ? review.description : null,
+          review_description: review ? review.review_text : null,
         };
       })
     );
