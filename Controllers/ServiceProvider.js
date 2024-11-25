@@ -167,6 +167,25 @@ const search = async (req, res) => {
       ]
     }).populate('user_id', 'profile_image name location');
 
+    const servicesWithReviews = await Promise.all(
+      results.map(async (service) => {
+        const reviews = await Review.find({ service_id: service._id });
+
+        const totalReviews = reviews.length;
+        const averageRating = totalReviews
+          ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+          : 0;
+
+        return {
+          ...service.toObject(),
+          averageRating: averageRating.toFixed(2), // To one decimal place
+          totalReviews,
+        };
+      })
+    );
+
+    res.status(200).json(servicesWithReviews);
+
     res.json(results);
   } catch (error) {
     console.error(error);
