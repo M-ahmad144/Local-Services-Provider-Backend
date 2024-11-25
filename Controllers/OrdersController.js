@@ -280,11 +280,14 @@ const getCompletedOrders = async (req, res) => {
   const { service_provider_id } = req.query;
 
   try {
-    // Fetch completed orders for the given service provider
+    // Fetch completed orders for the given service provider and populate buyer_id and service_provider_id
     const completedOrders = await Orders.find({
       service_provider_id: service_provider_id,
       order_status: "completed", // Filter orders with 'completed' status
-    }).select("_id description");
+    })
+      .select("_id description buyer_id service_provider_id")
+      .populate("buyer_id", "name") // Populate buyer_id with the name field
+      .populate("service_provider_id", "name"); // Populate service_provider_id with the name field
 
     // For each order, fetch its associated review
     const ordersWithReviews = await Promise.all(
@@ -293,9 +296,11 @@ const getCompletedOrders = async (req, res) => {
 
         return {
           order_id: order._id,
+          buyer_name: order.buyer_id?.name, // Buyer's name from populated data
+          service_provider_name: order.service_provider_id?.name, // Service provider's name from populated data
           work_description: order.description,
           rating: review ? review.rating : null,
-          description: review ? review.description : null,
+          review_description: review ? review.description : null,
         };
       })
     );
@@ -306,6 +311,9 @@ const getCompletedOrders = async (req, res) => {
     res.status(500).json({ error: "Error fetching completed orders with reviews" });
   }
 };
+
+module.exports = { getCompletedOrders };
+
 
 
 module.exports = {
