@@ -185,8 +185,6 @@ const search = async (req, res) => {
     );
 
     res.status(200).json(servicesWithReviews);
-
-    res.json(results);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
