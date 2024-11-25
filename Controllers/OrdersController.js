@@ -1,4 +1,5 @@
 const Orders = require("../Models/Order");
+const Review = require("../Models/Review");
 
 const CreateOrder = async (req, res, next) => {
   try {
@@ -275,6 +276,38 @@ const markOrdersAutoComplete = async () => {
   }
 };
 
+const getCompletedOrders = async (req, res) => {
+  const { service_provider_id } = req.query;
+
+  try {
+    // Fetch completed orders for the given service provider
+    const completedOrders = await Orders.find({
+      service_provider_id: service_provider_id,
+      order_status: "completed", // Filter orders with 'completed' status
+    }).select("_id description");
+
+    // For each order, fetch its associated review
+    const ordersWithReviews = await Promise.all(
+      completedOrders.map(async (order) => {
+        const review = await Review.findOne({ order_id: order._id }).select("rating description");
+
+        return {
+          order_id: order._id,
+          work_description: order.description,
+          rating: review ? review.rating : null,
+          description: review ? review.description : null,
+        };
+      })
+    );
+
+    res.status(200).json(ordersWithReviews);
+  } catch (err) {
+    console.error("Error fetching completed orders with reviews:", err);
+    res.status(500).json({ error: "Error fetching completed orders with reviews" });
+  }
+};
+
+
 module.exports = {
   CreateOrder,
   GetPendingOrders,
@@ -287,4 +320,5 @@ module.exports = {
   markAsCompletedByFreelancer,
   confirmOrderCompletion,
   markOrdersAutoComplete,
+  getCompletedOrders
 };
