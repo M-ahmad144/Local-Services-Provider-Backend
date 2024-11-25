@@ -68,23 +68,23 @@ const GetPendingOrders = async (req, res, next) => {
 
 
 const GetDisputedOrders = async (req, res, next) => {
-    const { user_type, user_id } = req.query;
-    console.log(user_type, user_id);
-    
-    try {
-        let orders;
+  const { user_type, user_id } = req.query;
+  console.log(user_type, user_id);
 
-        if (user_type === 'buyer') {
-            
-            orders = await Orders.find({ buyer_id: user_id, order_status: 'in dispute' })
-                                 .populate('service_provider_id', 'name');
-        } else if (user_type === 'service provider') {
-            
-            orders = await Orders.find({ service_provider_id: user_id, order_status: 'in dispute' })
-                                 .populate('buyer_id', 'name');
-        } else {
-            return res.status(400).json({ error: 'Invalid user_type provided' });
-        }
+  try {
+    let orders;
+
+    if (user_type === 'buyer') {
+
+      orders = await Orders.find({ buyer_id: user_id, order_status: 'in dispute' })
+        .populate('service_provider_id', 'name');
+    } else if (user_type === 'service provider') {
+
+      orders = await Orders.find({ service_provider_id: user_id, order_status: 'in dispute' })
+        .populate('buyer_id', 'name');
+    } else {
+      return res.status(400).json({ error: 'Invalid user_type provided' });
+    }
 
     res.status(200).json(orders);
   } catch (error) {
@@ -95,11 +95,11 @@ const GetDisputedOrders = async (req, res, next) => {
 
 
 const GetInProgressOrders = async (req, res, next) => {
-    const { user_type, user_id } = req.query; // Extract from query parameters
-    
-    
-    try {
-        let orders;
+  const { user_type, user_id } = req.query; // Extract from query parameters
+
+
+  try {
+    let orders;
 
     if (user_type === "buyer") {
       orders = await Orders.find({
@@ -280,19 +280,21 @@ const getCompletedOrders = async (req, res) => {
   const { service_provider_id } = req.query;
 
   try {
-    // Fetch completed orders for the given service provider and populate buyer_id and service_provider_id
-    const completedOrders = await Orders.find({
-      service_provider_id: service_provider_id,
-      order_status: "completed", // Filter orders with 'completed' status
-    })
-      .select("_id description buyer_id service_provider_id")
-      .populate("buyer_id", "name") // Populate buyer_id with the name field
-      .populate("service_provider_id", "name"); // Populate service_provider_id with the name field
 
-    // For each order, fetch its associated review
+    const completedOrders = await Orders.find({
+      $or: [
+        { service_provider_id: service_provider_id },
+        { buyer_id: service_provider_id }
+      ],
+      order_status: "completed",
+    }).select("_id description buyer_id service_provider_id")
+      .populate("buyer_id", "name")
+      .populate("service_provider_id", "name");
+
     const ordersWithReviews = await Promise.all(
       completedOrders.map(async (order) => {
-        const review = await Review.findOne({ order_id: order._id }).select("rating description");
+        const review = await Review.findOne({ order_id: order._id }).select("rating review_text");
+        console.log(review)
 
         return {
           order_id: order._id,
