@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true }, // Store hashed password
     user_type: {
       type: String,
-      enum: ["service provider", "buyer"],
+      enum: ["service provider", "buyer", "admin"],
       
     },
     profile_description: { type: String },
