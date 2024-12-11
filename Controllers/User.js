@@ -423,7 +423,7 @@ const CreateUser = async (req, res, next) => {
   });
 
   await user.save();
-  res.status(201).json({ message: "User created successfully", success: true });
+  res.status(201).json({ message: "User created successfully", success: true, user:user });
 };
 
 
