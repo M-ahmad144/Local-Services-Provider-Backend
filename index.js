@@ -29,11 +29,6 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Enable credentials
-
-  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-
   credentials: true, // Enable credentials (if needed)
 };
 
