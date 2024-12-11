@@ -399,12 +399,14 @@ const getUsers = async (req, res) => {
 const CreateUser = async (req, res, next) => {
   const { fullName, email, password, user_type } = req.body;
 
+  if (!fullName || !email || !password || !user_type) {
+    return res.status(400).json({ message: "Missing required fields", success: false });
+  }
+
   // Check if user exists
   let user = await User.findOne({ email });
   if (user) {
-    return res
-      .status(400)
-      .json({ message: "User already exists", success: false });
+    return res.status(400).json({ message: "User already exists", success: false });
   }
 
   // Encrypt password
@@ -417,12 +419,13 @@ const CreateUser = async (req, res, next) => {
     email: email,
     password: hashedPassword,
     user_type: user_type,
-    verify:true
+    verify: true,
   });
 
   await user.save();
+  res.status(201).json({ message: "User created successfully", success: true });
+};
 
-}
 
 // // change password
 // const updatePassword = asyncHandler(async (req, res) => {
