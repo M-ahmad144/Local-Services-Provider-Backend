@@ -7,7 +7,8 @@ const {
   logout,
   updatePassword,
   resendOTP,
-  getUsers
+  getUsers,
+  CreateUser
 
 } = require("../Controllers/User");
 
@@ -21,6 +22,8 @@ router.post("/role-selection", roleSelection);
 router.post("/OTP-verification", verifyEmail);
 router.post("/change-password",updatePassword);
 router.post("/resend-OTP",resendOTP);
+
+router.post('/admin/create' , CreateUser)
 
 
 module.exports = router;
