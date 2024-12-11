@@ -25,8 +25,7 @@ dotenv.config();
 const app = express();
 // CORS options
 const corsOptions = {
-  origin: "*",
-  //origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
+  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Enable credentials
