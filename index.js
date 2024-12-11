@@ -25,19 +25,11 @@ dotenv.config();
 const app = express();
 // CORS options
 const corsOptions = {
-  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
+  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173", "https://backend-qyb4mybn.b4a.run"],  // Add this domain
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Enable credentials
+  credentials: true,
 };
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // Or specify your domains
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
 
 
 app.use(cors(corsOptions));
