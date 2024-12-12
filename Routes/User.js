@@ -10,6 +10,7 @@ const {
   getUsers,
   CreateUser,
   deleteUserByAdmin,
+  editUserByAdmin,
 } = require("../Controllers/User");
 
 const router = express.Router();
@@ -26,5 +27,6 @@ router.post("/resend-OTP", resendOTP);
 router.get("/get-all-users", getUsers);
 router.post("/admin/create", CreateUser);
 router.delete("/admin/delete/:id", deleteUserByAdmin);
+router.put("/admin/edit/:id", editUserByAdmin);
 
 module.exports = router;

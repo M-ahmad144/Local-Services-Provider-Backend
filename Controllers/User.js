@@ -444,6 +444,18 @@ const deleteUserByAdmin = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: "User deleted successfully" });
 });
 
+const editUserByAdmin = asyncHandler(async (req, res, ) => {
+  const { id } = req.params;
+  const { fullName, verify, user_type } = req.body;
+  console.log(id, fullName, verify, user_type)
+  const user = await User.findById(id);
+  user.name = fullName;
+  user.user_type = user_type;
+  user.verify = verify;
+  await user.save();
+  return res.status(200).json({ data: user, message: "User updated successfully" });
+});
+
 module.exports = {
   login,
   signup,
@@ -455,4 +467,5 @@ module.exports = {
   resendOTP,
   getUsers,
   deleteUserByAdmin,
+  editUserByAdmin,
 };
