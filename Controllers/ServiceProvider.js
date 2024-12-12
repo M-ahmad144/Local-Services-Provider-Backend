@@ -19,7 +19,7 @@ const getAllServices = async (req, res) => {
 
         return {
           ...service.toObject(),
-          averageRating: averageRating.toFixed(1), // To one decimal place
+          averageRating: averageRating.toFixed(2), // To one decimal place
           totalReviews,
         };
       })
@@ -167,7 +167,24 @@ const search = async (req, res) => {
       ]
     }).populate('user_id', 'profile_image name location');
 
-    res.json(results);
+    const servicesWithReviews = await Promise.all(
+      results.map(async (service) => {
+        const reviews = await Review.find({ service_id: service._id });
+
+        const totalReviews = reviews.length;
+        const averageRating = totalReviews
+          ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+          : 0;
+
+        return {
+          ...service.toObject(),
+          averageRating: averageRating.toFixed(2), // To one decimal place
+          totalReviews,
+        };
+      })
+    );
+
+    res.status(200).json(servicesWithReviews);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -176,21 +193,23 @@ const search = async (req, res) => {
 
 const getAvgRatings = async (req, res) => {
   const { user_id } = req.params;
+
   try {
     const result = await Review.aggregate([
       {
-        // Match reviews for services where the user is the service provider
         $lookup: {
-          from: "services", // Collection name for services
+          from: "services", // Name of your services collection
           localField: "service_id",
           foreignField: "_id",
-          as: "serviceDetails"
+          as: "service"
         }
       },
       {
-        // Filter reviews whose service belongs to the specified user
+        $unwind: "$service"
+      },
+      {
         $match: {
-          "serviceDetails.user_id": new mongoose.Types.ObjectId(user_id)
+          "service.user_id": new mongoose.Types.ObjectId(user_id)
         }
       },
       {
@@ -201,16 +220,16 @@ const getAvgRatings = async (req, res) => {
         }
       }
     ]);
-    console.log(result)
-    // Default to 0 if no reviews are found
-    const avgRating = result.length > 0 ? result[0].avgRating.toFixed(2) : 0;
 
-    return res.status(200).json({ avgRating });
+    const avgRating = (result.length > 0 ? result[0].avgRating : 0).toFixed(2);
+
+    res.status(200).json({ avgRating });
   } catch (err) {
-    console.error("Error fetching average ratings:", err);
-    return res.status(500).json({ error: "Error fetching average ratings" });
+    console.error("Error fetching user's average rating:", err);
+    res.status(500).json({ error: "Error fetching user's average rating" });
   }
 };
+
 
 
   

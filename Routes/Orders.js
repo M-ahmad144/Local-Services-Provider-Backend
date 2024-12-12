@@ -10,6 +10,7 @@ const {
   markAsCompletedByFreelancer,
   confirmOrderCompletion,
     GetDisputedOrders,
+    getCompletedOrders,
 } = require("../Controllers/OrdersController");
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.patch("/time_update", counterTimeUpdate);
 router.get('/pending' , GetPendingOrders)
 router.get('/in_progress' , GetInProgressOrders)
 router.get('/disputed' , GetDisputedOrders)
+router.get('/completed' , getCompletedOrders)
 
 
 router.patch("/reject", orderRejectUpdate);
