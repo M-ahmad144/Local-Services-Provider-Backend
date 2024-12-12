@@ -8,7 +8,9 @@ const AppError = require("../utils/Error");
 const sockets = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "*", // You can set specific domains here
+      origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
+      methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 // user 1 66f6b3665bdea8d787820e7e

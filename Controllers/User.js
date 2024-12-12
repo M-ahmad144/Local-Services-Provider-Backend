@@ -21,7 +21,6 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-
 // Login function
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -80,7 +79,7 @@ const login = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       user_type: user.user_type,
-      profile_img : user.profile_image
+      profile_img: user.profile_image,
     },
   });
 
@@ -239,7 +238,7 @@ const signup = asyncHandler(async (req, res) => {
 
   // Send OTP but don't send a response in sendOTP
   await sendOTP({ _id: user._id, email: user.email });
-console.log("OTP sent successfully");
+  console.log("OTP sent successfully");
   // Set token in cookie and send response
   res.cookie("token", token, {
     httpOnly: true,
@@ -256,7 +255,6 @@ console.log("OTP sent successfully");
       email: user.email,
 
       user_type: "buyer",
-
     },
   });
 });
@@ -296,8 +294,7 @@ const sendOTP = async ({ _id, email }) => {
   }
 };
 
-
-const resendOTP = async (req,res) => {
+const resendOTP = async (req, res) => {
   const { _id, email } = req.body;
   console.log("email", email);
   try {
@@ -351,41 +348,51 @@ const updatePassword = asyncHandler(async (req, res) => {
   // Check if user exists
   const user = await User.findOne({ email: email });
   if (!user) {
-    return res.status(200).json({success:false, message: "User not found" });
+    return res.status(200).json({ success: false, message: "User not found" });
   }
   console.log("User found");
 
   // Check if current password is correct
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) {
-    return res.status(200).json({success:false, message: "Incorrect password" });
+    return res
+      .status(200)
+      .json({ success: false, message: "Incorrect password" });
   }
   console.log("Password matched");
 
   // Ensure the new password is different from the current password
   if (currentPassword === newPassword) {
-    return res.status(200).json({success:false, message: "New password must be different from the current password" });
+    return res.status(200).json({
+      success: false,
+      message: "New password must be different from the current password",
+    });
   }
   console.log("New password is different from the current password");
 
   // Encrypt new password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(newPassword, salt);
-console.log("Password hashed successfully");
+  console.log("Password hashed successfully");
   // Update password
   user.password = hashedPassword;
   await user.save();
-console.log("Password updated successfully");
-  res.status(200).json({ success: true, message: "Password updated successfully" });
+  console.log("Password updated successfully");
+  res
+    .status(200)
+    .json({ success: true, message: "Password updated successfully" });
 });
 
 const getUsers = async (req, res) => {
   try {
     // Fetch users with selected fields only
-    const users = await User.find({}, "name email user_type verify profile_description profile_image location skills created_at");
+    const users = await User.find(
+      {},
+      "name email user_type verify profile_description profile_image location skills created_at"
+    );
 
     // Send response
-    res.status(200).json({users});
+    res.status(200).json({ users });
   } catch (error) {
     console.error("Error fetching users for admin dashboard:", error);
     res.status(500).json({
@@ -393,18 +400,49 @@ const getUsers = async (req, res) => {
       message: "Failed to fetch users. Please try again later.",
     });
   }
-}
+};
 
+const CreateUser = async (req, res, next) => {
+  const { fullName, email, password, user_type } = req.body;
 
+  if (!fullName || !email || !password || !user_type) {
+    return res
+      .status(400)
+      .json({ message: "Missing required fields", success: false });
+  }
 
+  // Check if user exists
+  let user = await User.findOne({ email });
+  if (user) {
+    return res
+      .status(400)
+      .json({ message: "User already exists", success: false });
+  }
 
-// // change password
-// const updatePassword = asyncHandler(async (req, res) => {
+  // Encrypt password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-// path=4;
+  // Create user
+  user = new User({
+    name: fullName,
+    email: email,
+    password: hashedPassword,
+    user_type: user_type,
+    verify: true,
+  });
 
+  await user.save();
+  res
+    .status(201)
+    .json({ message: "User created successfully", success: true, user: user });
+};
 
-// });
+const deleteUserByAdmin = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  await User.findByIdAndDelete(id);
+  res.status(200).json({ message: "User deleted successfully" });
+});
 
 module.exports = {
   login,
@@ -413,8 +451,8 @@ module.exports = {
   verifyEmail,
   roleSelection,
   updatePassword,
-
+  CreateUser,
   resendOTP,
-  getUsers
-
+  getUsers,
+  deleteUserByAdmin,
 };

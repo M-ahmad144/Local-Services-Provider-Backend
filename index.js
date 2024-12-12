@@ -12,6 +12,7 @@ const userRouter = require("./Routes/User");
 const chatRoutes = require("./Routes/chatRoutes");
 const messageRoutes = require("./Routes/messagesRoutes");
 
+
 const checkoutRoutes = require("./Routes/stripeCheckout");
 const analyticsRoutes = require("./Routes/AnalyticsRoutes");
 const Reviews = require("./Routes/Review");
@@ -25,17 +26,12 @@ dotenv.config();
 const app = express();
 // CORS options
 const corsOptions = {
-  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"],
+  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173", "https://backend-qyb4mybn.b4a.run"],  // Add this domain
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Enable credentials
-
-  origin: ["https://myneighbourly.vercel.app", "http://localhost:5173"], // List of allowed origins
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-
-  credentials: true, // Enable credentials (if needed)
+  credentials: true,
 };
+
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
@@ -58,3 +54,5 @@ app.use("/review", Reviews);
 app.use(globalErrorHandler);
 
 module.exports = app;
+ 
+
